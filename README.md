@@ -2,8 +2,6 @@
 
 This repository is a clean extraction of the code, experiment manifests, result tables, and paper assets used for the LeNEPA MiLeTS/KDD 2026 submission.
 
-It is not the Aionoscope paper repository. Aionoscope is used here as an evaluation/data-generation tool for the LeNEPA fixed-recipe experiments.
-
 ## What Is Included
 
 - LeNEPA/NEPA/JEPA training code needed to reproduce the paper runs.
