@@ -49,7 +49,7 @@ class UCRBenchmarkConfig:
   eval_batch_size: int
 
   classifier: str  # "rf" | "logreg"
-  seed: int | None = None  # Optional: seeds classifier randomness (opt-in; default keeps legacy behavior).
+  seed: int | None = None  # Optional: seeds classifier randomness; default leaves estimator RNG unset.
   rf_n_estimators: int | None = None
   rf_n_jobs: int | None = None
   logreg_max_iter: int | None = None

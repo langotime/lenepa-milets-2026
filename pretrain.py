@@ -156,34 +156,34 @@ def _canonicalize_checkpoint_config_payload(
   """Normalize checkpoint config payloads onto canonical Aionoscope field names."""
   normalized = dict(payload)
 
-  # Step 1: reject retired legacy alias fields explicitly.
+  # Step 1: reject retired Aionoscope alias fields explicitly.
   if _RETIRED_AIONO_CONFIG_KEY in normalized or _RETIRED_AIONO_OFFLINE_KEY in normalized:
     raise ValueError(
-      'Checkpoint config still uses a retired legacy alias. '
+      'Checkpoint config still uses a retired Aionoscope alias. '
       'Fix: migrate the checkpoint payload to use "aiono" and "offline_probe_aiono".')
   if normalized.get('data_backend') == _RETIRED_AIONO_ALIAS:
     raise ValueError(
-      'Checkpoint config still uses a retired legacy alias for data_backend. '
+      'Checkpoint config still uses a retired Aionoscope alias for data_backend. '
       'Fix: migrate it to data_backend="aiono".')
   if normalized.get('probe_source') == _RETIRED_AIONO_ALIAS:
     raise ValueError(
-      'Checkpoint config still uses a retired legacy alias for probe_source. '
+      'Checkpoint config still uses a retired Aionoscope alias for probe_source. '
       'Fix: migrate it to probe_source="aiono".')
   if normalized.get('offline_probe_source') == _RETIRED_AIONO_ALIAS:
     raise ValueError(
-      'Checkpoint config still uses a retired legacy alias for offline_probe_source. '
+      'Checkpoint config still uses a retired Aionoscope alias for offline_probe_source. '
       'Fix: migrate it to offline_probe_source="aiono".')
   offline_probe_sources = normalized.get('offline_probe_sources')
   if isinstance(offline_probe_sources, (list, tuple)):
     if any(source == _RETIRED_AIONO_ALIAS for source in offline_probe_sources):
       raise ValueError(
-        'Checkpoint config still uses offline_probe_sources containing a retired legacy alias. '
+        'Checkpoint config still uses offline_probe_sources containing a retired Aionoscope alias. '
         'Fix: migrate them to "aiono".')
     normalized['offline_probe_sources'] = list(offline_probe_sources)
   datasets = normalized.get('datasets')
   if isinstance(datasets, dict) and _RETIRED_AIONO_ALIAS in datasets:
     raise ValueError(
-      'Checkpoint config still uses datasets with a retired legacy alias. '
+      'Checkpoint config still uses datasets with a retired Aionoscope alias. '
       'Fix: migrate it to datasets.aiono.')
 
   # Step 2: keep the offline-probe defaults aligned with the canonical blocks.
@@ -292,7 +292,7 @@ def main(cfg: DictConfig):
         'sampling_frequency',
         config_payload.get('sampling_frequency'),
       )
-    legacy_downstream_rep_layer = config_payload.pop('downstream_rep_layer', None)
+    compat_downstream_rep_layer = config_payload.pop('downstream_rep_layer', None)
     if (
       config_payload.get('use_nepa') is True
       and config_payload.get('offline_probe_eval_interval') is not None
@@ -303,22 +303,22 @@ def main(cfg: DictConfig):
       depth = config_payload.get('depth')
       if not isinstance(depth, int):
         raise ValueError(
-          'Checkpoint config is missing `depth`; cannot migrate legacy downstream_rep_layer '
+          'Checkpoint config is missing `depth`; cannot migrate retired downstream_rep_layer '
           f'to offline_probe_layers_*. chkpt={chkpt_path}')
-      rep_layer = depth if legacy_downstream_rep_layer is None else legacy_downstream_rep_layer
+      rep_layer = depth if compat_downstream_rep_layer is None else compat_downstream_rep_layer
       config_payload['offline_probe_layers_categorical'] = [rep_layer]
       config_payload['offline_probe_layers_dense'] = [rep_layer]
       logger.warning(
-        'Resuming legacy NEPA checkpoint without offline_probe_layers_* configured; '
-        f'migrating from downstream_rep_layer={legacy_downstream_rep_layer} to '
+        'Resuming older NEPA checkpoint without offline_probe_layers_* configured; '
+        f'migrating from downstream_rep_layer={compat_downstream_rep_layer} to '
         f'offline_probe_layers_categorical/dense=[{rep_layer}].')
-    for legacy_key in (
+    for compat_key in (
       'offline_probe_cache_on_device',
       'offline_probe_eval_logits_on_device',
       'offline_probe_pairwise_confusion_on_device',
       'offline_probe_regression_eval_on_device',
     ):
-      config_payload.pop(legacy_key, None)
+      config_payload.pop(compat_key, None)
     config = configs.pretrain.Config(**config_payload)
     if (
       offline_probe_eval_only
@@ -333,7 +333,7 @@ def main(cfg: DictConfig):
           'Checkpoint was trained with sampling_frequency='
           f'{int(checkpoint_sampling_frequency)} Hz, but offline_probe_eval_only requested '
           'aiono_basic_components/v1, which requires a 500 Hz checkpoint to stay benchmark-comparable. '
-          'Fix: use a 500 Hz checkpoint or switch to a legacy non-benchmark offline probe config.')
+          'Fix: use a 500 Hz checkpoint or switch to a non-benchmark offline probe config.')
   else:
     # Build config from Hydra-composed config (excluding runtime keys)
     config_dict = hydra_get_config_dict(cfg, set(_RUNTIME_KEYS))
@@ -617,11 +617,11 @@ def main(cfg: DictConfig):
 
   seed_mode = 'none'
   if config.seed is not None:
-    seed_mode = 'legacy'
+    seed_mode = 'single'
   elif config.seed_init is not None:
     seed_mode = 'split'
 
-  if seed_mode == 'legacy':
+  if seed_mode == 'single':
     logger.info(f'Using fixed seed={config.seed}')
     seed_everything(int(config.seed))
   elif seed_mode == 'split':
@@ -934,7 +934,7 @@ def main(cfg: DictConfig):
   @contextmanager
   def _offline_probe_rng_context(*, log_step: int, salt: str):
     """Optionally isolate RNG state for one offline probe call (opt-in via seeding)."""
-    # Step 1: keep legacy behavior when seeding is disabled.
+    # Step 1: keep default behavior when seeding is disabled.
     if offline_probe_base_seed is None:
       yield
       return
@@ -1166,7 +1166,7 @@ def main(cfg: DictConfig):
             )
             offline_probe_logs_combined.update(dense_logs)
 
-        # Step 3c: log legacy "best across layers" keys for compatibility.
+        # Step 3c: log no-layer "best across layers" keys for compatibility.
         if layers_categorical:
           compat_probe_prefix = offline_probe_build_prefix(
             root='offline_probe',
@@ -1206,7 +1206,7 @@ def main(cfg: DictConfig):
           offline_probe_logs_combined[f'{compat_dense_prefix}/r2'] = best_r2
           offline_probe_logs_combined[f'{compat_dense_prefix}/pearson'] = best_pearson
       else:
-        # Legacy single-layer probes: evaluate once per source and log metrics.
+        # Single-layer probes: evaluate once per source and log metrics.
         source_start = perf_counter()
         log_label_exposure = config.label_exposure_offline_probe_log and source == 'ptb-xl'
         with _offline_probe_rng_context(log_step=log_step, salt=f'source={source}:mode=single'):

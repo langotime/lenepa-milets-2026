@@ -43,11 +43,11 @@ def test_ptbxl_lenepa_config_composes():
   assert cfg.nepa_sigreg_time_layers == [0, 8]
 
 
-def test_diag_lenepa_config_composes():
+def test_aionoscope_lenepa_config_composes():
   cfg = _compose(
     "ViTXS_aiono",
     [
-      "run_name=smoke_diag",
+      "run_name=smoke_aionoscope",
       "dataset=aiono_basic_components_imbalanced",
       "offline_probe_dataset=same_as_train",
       "objective=nepa_sigreg",

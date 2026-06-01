@@ -1767,7 +1767,7 @@ def offline_probe_run_linear_multihead(
   """Run offline classification and dense regression probes from a shared feature cache.
 
   The runner supports either:
-  - one validation loader (`val_loader`) for legacy single-split probing, or
+  - one validation loader (`val_loader`) for single-split probing, or
   - multiple validation loaders keyed by logical seed (`val_loaders_by_seed`) for
     benchmark-style median/std aggregation.
   """

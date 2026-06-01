@@ -3,7 +3,7 @@ from __future__ import annotations
 """W&B logging utilities for offline probes.
 
 These helpers keep `pretrain.py` focused on training / evaluation orchestration,
-while sharing consistent logging schemas between legacy (single-layer) and
+while sharing consistent logging schemas between single-layer and
 layered offline probe modes.
 """
 
@@ -20,7 +20,7 @@ def offline_probe_build_prefix(*, root: str, source: str, layer: int | None, mul
   Args:
     root: Root prefix (e.g., `offline_probe`, `offline_dense_probe`).
     source: Offline probe dataset source name.
-    layer: Optional encoder layer index. `None` means legacy (no layer component).
+    layer: Optional encoder layer index. `None` means no layer component.
     multi_source: Whether multiple offline probe sources are being logged.
 
   Returns:
@@ -41,7 +41,7 @@ def offline_probe_build_best_across_layers_categorical_logs(
   """Build W&B logs for best-across-layer categorical probe metrics.
 
   This is used in offline-probe layer mode to emit a small set of compatibility
-  metrics under the legacy prefix (no explicit layer component). The logs include:
+  metrics under the no-layer prefix (no explicit layer component). The logs include:
   - best macro AUROC/AUPRC across candidate layers
   - which layer achieved each best metric
   - high-level group macro AUROC/AUPRC (e.g., Aiono: events/noise/periodic/trend)

@@ -4,8 +4,7 @@ This module defines the common API used by all data backend implementations:
 - PretrainDataBundle: The unified return type for all backends
 - Iterator utilities: cycle, map_to_device, prefetch_batch
 
-Backend implementations (backend_ptbxl, backend_aiono, and the legacy
-implementation file backend_aiono) import from this module and return
+Backend implementations import from this module and return
 PretrainDataBundle instances.
 """
 from __future__ import annotations

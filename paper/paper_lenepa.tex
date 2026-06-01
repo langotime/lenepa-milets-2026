@@ -62,9 +62,9 @@ We study a narrower practical question than fully tuned benchmark performance: h
 We frame this as a fixed-recipe stress test rather than as a comparison against optimally tuned methods.
 We introduce Latent Euclidean Next-Embedding Prediction Architecture (LeNEPA), a no-augmentation next-latent-token prediction objective with a causal backbone.
 LeNEPA replaces the stop-gradient/EMA stabilization used by vanilla NEPA with SIGReg-based isotropy regularization and computes the predictive loss in a lightweight projected space that is discarded for evaluation.
-We compare LeNEPA with an ECG-tuned JEPA recipe under a fixed-horizon frozen-probe protocol on PTB-XL and an anonymized synthetic diagnostic corpus.
+We compare LeNEPA with an ECG-tuned JEPA recipe under a fixed-horizon frozen-probe protocol on PTB-XL and Aionoscope.
 Both methods are retrained independently on each dataset, but their method-specific recipes are kept unchanged: LeNEPA keeps the same no-augmentation objective configuration, while JEPA keeps the same ECG-tuned masking recipe.
-In this protocol, the ECG-tuned JEPA recipe is strong in-domain on PTB-XL but weaker when reused unchanged on Diag, whereas LeNEPA preserves useful frozen-probe gains on both datasets.
+In this protocol, the ECG-tuned JEPA recipe is strong in-domain on PTB-XL but weaker when reused unchanged on Aionoscope, whereas LeNEPA preserves useful frozen-probe gains on both datasets.
 Learning curves suggest faster early representation acquisition under this fixed-horizon protocol: LeNEPA reaches $80\%$ of its final AUROC/AUPRC gain after $2$--$5$k updates, compared with $5$--$10$k updates for the faster JEPA readout.
 As a separate external frozen-encoder check, a CauKer-pretrained LeNEPA variant reaches $77.65\%$ mean UCR-128 Random-Forest accuracy in a single-seed, best-checkpoint run---within $1.16$ points of Mantis and within $0.24$ points of MOMENT ($77.89\%$).
 Overall, the results support no-augmentation latent prediction as a useful candidate recipe for low-retuning time-series SSL.
@@ -92,7 +92,7 @@ Augmentation-based JEPA-style methods~\citep{assran2023ijepa} are well studied a
 \begin{itemize}
   \item We propose LeNEPA, a \emph{no-augmentation next-embedding prediction architecture} for frozen-backbone time-series representation learning, adapting SIGReg and Guillotine Regularization to autoregressive latent prediction to remove stop-gradient/EMA stabilization from the tested recipe.
 
-  \item We evaluate fixed-recipe pretraining reuse across real ECG data and an anonymized synthetic diagnostic benchmark, separating recipe portability from checkpoint transfer: LeNEPA preserves useful frozen-probe gains when reused unchanged, while an ECG-tuned JEPA view recipe is strong in-domain but weaker when its fixed recipe is reused on a structurally different signal family.
+  \item We evaluate fixed-recipe pretraining reuse across real ECG data and Aionoscope, separating recipe portability from checkpoint transfer: LeNEPA preserves useful frozen-probe gains when reused unchanged, while an ECG-tuned JEPA view recipe is strong in-domain but weaker when its fixed recipe is reused on a structurally different signal family.
 
   \item We compare a frozen CauKer-pretrained LeNEPA encoder on UCR-128 against Mantis, NuTime, and MOMENT Random-Forest protocol anchors, using no handcrafted augmentations.
 \end{itemize}
@@ -204,7 +204,7 @@ The main objective is
   \lambda_{\mathrm{T}}\mathcal{L}_{\mathrm{SIG}}^{\mathrm{time}},
 \label{eq:main_lenepa_objective}
 \end{equation}
-with $\lambda_{\mathrm{T}}=20$ and $\mathcal{L}_{\mathrm{T}}=\{0,8\}$ in the main PTB-XL/Diag configuration;
+with $\lambda_{\mathrm{T}}=20$ and $\mathcal{L}_{\mathrm{T}}=\{0,8\}$ in the main PTB-XL/Aionoscope configuration;
 this setting was selected from ablations run on PTB-XL (Table~\ref{tab:ablation_summary}).
 We also evaluated batch-wise (B), pooled-representation (R), innovation/difference (I), and combined BRI placements; temporal (T) SIGReg was the only single-component placement with sustained frozen-backbone gains across both datasets.
 
@@ -234,16 +234,16 @@ Therefore, we evaluate representations from all backbone layers and report resul
 
 We evaluate representations with frozen-backbone probes because our goal is to test whether a pretraining recipe produces useful sequence embeddings when reused unchanged.
 Throughout the paper, \textbf{LeNEPA} denotes the objective and architecture, not a single shared checkpoint or foundation encoder.
-We use three separately pretrained LeNEPA encoders: \textbf{LeNEPA-PTBXL}, trained on PTB-XL~\citep{wagner2020ptbxl}; \textbf{LeNEPA-Diag}, trained on an anonymized synthetic diagnostic time-series corpus; and \textbf{LeNEPA-CauKer}, trained on CauKer~\citep{xie2025cauker}.
+We use three separately pretrained LeNEPA encoders: \textbf{LeNEPA-PTBXL}, trained on PTB-XL~\citep{wagner2020ptbxl}; \textbf{LeNEPA-Aionoscope}, trained on Aionoscope; and \textbf{LeNEPA-CauKer}, trained on CauKer~\citep{xie2025cauker}.
 These checkpoints share the same no-augmentation latent-prediction recipe, but their weights are trained independently.
 
 We separate two evaluation questions to avoid conflating recipe reuse with checkpoint transfer.
 \textbf{Fixed-recipe pretraining reuse} asks whether the same SSL objective configuration can be reused when the pretraining distribution changes, without re-designing method-specific augmentations or loss hyperparameters.
-We test this by training both methods independently on both datasets: LeNEPA-PTBXL and LeNEPA-Diag use exactly the same no-augmentation objective configuration, while JEPA-PTBXL and JEPA-Diag use the same ECG-tuned view recipe. In both cases, only the pretraining dataset changes.
+We test this by training both methods independently on both datasets: LeNEPA-PTBXL and LeNEPA-Aionoscope use exactly the same no-augmentation objective configuration, while JEPA-PTBXL and JEPA-Aionoscope use the same ECG-tuned view recipe. In both cases, only the pretraining dataset changes.
 Crucially, both recipes were developed and fixed using PTB-XL experiments: the JEPA masking schedule was tuned for ECG morphology, and the LeNEPA SIGReg configuration ($\lambda_{\mathrm{T}}=20$, layers $\{0,8\}$) was likewise selected from PTB-XL ablations.
-Neither recipe was optimized for Diag.
+Neither recipe was optimized for Aionoscope.
 We hypothesize that masking recipes encode domain-semantic assumptions---which temporal regions constitute meaningful prediction targets---whereas regularization hyperparameters primarily encode optimization dynamics; moving from a masking-based view recipe to an augmentation-free regularization-based recipe should therefore reduce the domain-specific tuning required when the signal family changes.
-This protocol does not test the best possible Diag-tuned JEPA configuration; a JEPA recipe designed for Diag's signal characteristics would likely recover strong performance. Rather, the experiment measures the cost of relying on ECG-masking assumptions when that recipe is reused on a structurally different signal family.
+This protocol does not test the best possible Aionoscope-tuned JEPA configuration; a JEPA recipe designed for Aionoscope's signal characteristics would likely recover strong performance. Rather, the experiment measures the cost of relying on ECG-masking assumptions when that recipe is reused on a structurally different signal family.
 \textbf{Frozen-encoder checking} asks whether one pretrained encoder can produce useful features on new downstream datasets without changing its weights.
 We test this by training LeNEPA-CauKer once, freezing it, extracting per-layer embeddings, and evaluating Random-Forest probes on UCR-128, following the MantisV2 testing protocol~\citep{feofanov2026mantisv2}.
 
@@ -261,18 +261,18 @@ LeNEPA-PTBXL
   & PTB-XL
   & PTB-XL
   & In-domain ECG reference against ECG-tuned JEPA \\
-LeNEPA-Diag
-  & Diag
-  & Diag
+LeNEPA-Aionoscope
+  & Aionoscope
+  & Aionoscope
   & Fixed-recipe reuse across signal families \\
 JEPA-PTBXL
   & PTB-XL
   & PTB-XL
   & ECG-tuned JEPA reference under the same fixed-horizon protocol \\
-JEPA-Diag
-  & Diag
-  & Diag
-  & Same ECG-tuned JEPA recipe retrained on Diag to test unchanged reuse \\
+JEPA-Aionoscope
+  & Aionoscope
+  & Aionoscope
+  & Same ECG-tuned JEPA recipe retrained on Aionoscope to test unchanged reuse \\
 LeNEPA-CauKer
   & CauKer
   & UCR-128
@@ -287,12 +287,12 @@ Full training, evaluation, and plotting code together with exact configuration f
 \begin{table*}[t]
 \centering
 \scriptsize
-\caption{Implementation and evaluation configuration for the main experiments. PTB-XL and Diag use the same fixed-horizon recipe-reuse matrix; the CauKer/UCR row documents the frozen-encoder check in Table~\ref{tab:ucr_mantis_comparison}.}
+\caption{Implementation and evaluation configuration for the main experiments. PTB-XL and Aionoscope use the same fixed-horizon recipe-reuse matrix; the CauKer/UCR row documents the frozen-encoder check in Table~\ref{tab:ucr_mantis_comparison}.}
 \label{tab:reproducibility_config}
 \setlength{\tabcolsep}{3pt}
 \begin{tabularx}{\textwidth}{p{0.16\textwidth} X X}
 \toprule
-Item & PTB-XL / Diag fixed-horizon matrix & CauKer $\rightarrow$ UCR-128 frozen-encoder check \\
+Item & PTB-XL / Aionoscope fixed-horizon matrix & CauKer $\rightarrow$ UCR-128 frozen-encoder check \\
 \midrule
 Training horizon and seeds
 & $20{,}000$ gradient steps; seeds $s\in\{0,1,2,3,4\}$; offline probes every $1{,}000$ steps, including step $0$
@@ -316,13 +316,13 @@ Probe protocol
 \end{tabularx}
 \end{table*}
 
-For the NEPA/LeNEPA/JEPA comparisons on PTB-XL and Diag, all methods use the same ViT-XS backbone size and are trained for a fixed horizon of $20{,}000$ gradient steps.
+For the NEPA/LeNEPA/JEPA comparisons on PTB-XL and Aionoscope, all methods use the same ViT-XS backbone size and are trained for a fixed horizon of $20{,}000$ gradient steps.
 For NEPA/LeNEPA, we use mean pooling over causal patch-token representations; for JEPA, we report both CLS-token and mean-pooling readouts to control for readout mismatch.
 Because next-embedding objectives can place the most probe-useful representation at an intermediate depth, we train offline linear probes on frozen per-layer representations for layers $0$--$8$.
-For the last-step headline LeNEPA classification readouts, we use a fixed mid-layer $L4$ representation rather than an oracle layer; this is conservative on PTB-XL and exactly matches the best layer on Diag and the best UCR checkpoint (Table~\ref{tab:layer_selection_sensitivity}).
-For JEPA/NEPA baselines and dense Diag diagnostics, we retain best-layer values to avoid penalizing baselines for their different depth profiles and to keep dense probes as diagnostic rather than headline comparison metrics.
+For the last-step headline LeNEPA classification readouts, we use a fixed mid-layer $L4$ representation rather than an oracle layer; this is conservative on PTB-XL and exactly matches the best layer on Aionoscope and the best UCR checkpoint (Table~\ref{tab:layer_selection_sensitivity}).
+For JEPA/NEPA baselines and dense Aionoscope diagnostics, we retain best-layer values to avoid penalizing baselines for their different depth profiles and to keep dense probes as diagnostic rather than headline comparison metrics.
 We evaluate probes every $1{,}000$ pretraining steps, including step $0$, and report last-step values unless stated otherwise.
-For PTB-XL and Diag, each objective--dataset pair is repeated with five random seeds; tables and plots in this paper aggregate per-seed metrics as median $\pm$ sample standard deviation.
+For PTB-XL and Aionoscope, each objective--dataset pair is repeated with five random seeds; tables and plots in this paper aggregate per-seed metrics as median $\pm$ sample standard deviation.
 For delta summaries, we compute each seed's difference between step $20{,}000$ and step $0$, selecting the best layer independently at each step.
 For early-gain summaries on AUROC/AUPRC, define the normalized gain
 \begin{equation}
@@ -333,28 +333,28 @@ We compute these thresholds on the median learning curves in Figure~\ref{fig:dyn
 
 PTB-XL is a 12-lead ECG classification dataset with clinically meaningful multi-label targets~\citep{wagner2020ptbxl}.
 This benchmark is a useful in-domain test because ECG\_JEPA is a strong baseline designed around ECG-specific JEPA augmentations~\citep{weimann2024jepaecg}.
-To test fixed-recipe reuse across a different signal family, we use an anonymized synthetic diagnostic benchmark, \textbf{Diag}, implemented as an online generator rather than a fixed finite dataset.
-Diag is introduced in a concurrent anonymized submission; in this paper we use it only as a controlled pretraining and frozen-probe benchmark.
+To test fixed-recipe reuse across a different signal family, we use \textbf{Aionoscope}, implemented as an online generator rather than a fixed finite dataset.
+In this paper we use Aionoscope as a controlled pretraining and frozen-probe benchmark.
 The stream used here is a basic-components generator of univariate sequences of length $5000$.
 Each sample is generated by selecting $2$ active latent components from a fixed inventory of $14$ component types spanning constant baselines, noise processes, trends, periodic waveforms, and sparse events.
 The main stream is intentionally imbalanced: most components have sampling weight $1.0$, while six rare components have weight $0.02$ (\texttt{gaussian\_noise}, \texttt{log\_trend}, \texttt{square}, \texttt{spike}, \texttt{level\_change}, and \texttt{gaussian}).
 
-Diag exposes two kinds of targets used for frozen-backbone probing.
+Aionoscope exposes two kinds of targets used for frozen-backbone probing.
 Categorical targets are multi-hot indicators of the active component types and are evaluated with macro AUROC/AUPRC.
 Dense targets are scalar generative parameters recorded by the generator metadata, including noise scale, trend coefficients, periodic amplitude/frequency/phase/offset, and event time/amplitude/width; disabled components are masked for the corresponding dense target.
 SSL training never uses these targets.
 Pretraining and probing streams use separate fixed RNG streams, so probes evaluate fresh generated samples from the same distribution rather than memorized training examples.
 
 Finally, we include a frozen-encoder check by testing LeNEPA-CauKer trained on CauKer~\citep{xie2025cauker} on the full UCR archive of 128 univariate classification datasets~\citep{dau2019ucr}.
-Unlike the PTB-XL/Diag fixed-recipe study, the CauKer-to-UCR experiment evaluates a single frozen LeNEPA checkpoint across 128 external datasets.
+Unlike the PTB-XL/Aionoscope fixed-recipe study, the CauKer-to-UCR experiment evaluates a single frozen LeNEPA checkpoint across 128 external datasets.
 For this experiment, we follow the Mantis frozen-feature protocol: extract frozen per-layer sequence embeddings, train a Random Forest classifier on each dataset's training split, evaluate on its test split, and average accuracy across datasets~\citep{feofanov2026mantisv2,xie2025cauker}.
 We use the original Mantis Random-Forest result as the primary published anchor, and report NuTime and MOMENT only as protocol-matched context from the MantisV2 Random-Forest comparison~\citep{lin2024nutime,goswami2024moment}.
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=\textwidth]{figures/dynamics_best_layer_classification_transfer_anonymized.pdf}
-\caption{PTB-XL/Diag fixed-recipe reuse experiment: best-layer frozen-backbone classification dynamics over the fixed $20{,}000$-step pretraining horizon. Curves show AUROC/AUPRC at each offline-probe evaluation step for PTB-XL and Diag. This tests recipe portability, not shared-checkpoint transfer or a claim that Diag-tuned JEPA cannot work. Both methods are trained separately on each dataset; the fixed ECG-tuned JEPA recipe remains strong in-domain but is weaker when reused unchanged on Diag.}
-\Description{Four line plots showing AUROC and AUPRC over pretraining steps for PTB-XL and Diag. LeNEPA improves rapidly and remains strong on Diag, while the ECG-tuned JEPA recipe has weaker gains when reused unchanged on Diag.}
+\includegraphics[width=\textwidth]{figures/dynamics_best_layer_classification_transfer.pdf}
+\caption{PTB-XL/Aionoscope fixed-recipe reuse experiment: best-layer frozen-backbone classification dynamics over the fixed $20{,}000$-step pretraining horizon. Curves show AUROC/AUPRC at each offline-probe evaluation step for PTB-XL and Aionoscope. This tests recipe portability, not shared-checkpoint transfer or a claim that Aionoscope-tuned JEPA cannot work. Both methods are trained separately on each dataset; the fixed ECG-tuned JEPA recipe remains strong in-domain but is weaker when reused unchanged on Aionoscope.}
+\Description{Four line plots showing AUROC and AUPRC over pretraining steps for PTB-XL and Aionoscope. LeNEPA improves rapidly and remains strong on Aionoscope, while the ECG-tuned JEPA recipe has weaker gains when reused unchanged on Aionoscope.}
 \label{fig:dynamics_best_layer_classification_transfer}
 \end{figure*}
 
@@ -419,17 +419,17 @@ NuTime/MOMENT entries use the Random-Forest UCR-128 averages reported in MantisV
 \end{figure}
 
 We evaluate frozen-backbone representations using per-layer probes.
-For time series, we evaluate fixed-recipe reuse on PTB-XL (12-lead ECG classification) and Diag (classification + dense regression), then use UCR-128 as a separate frozen-encoder check.
+For time series, we evaluate fixed-recipe reuse on PTB-XL (12-lead ECG classification) and Aionoscope (classification + dense regression), then use UCR-128 as a separate frozen-encoder check.
 
-\paragraph{Fixed-recipe reuse: PTB-XL vs. Diag.}
+\paragraph{Fixed-recipe reuse: PTB-XL vs. Aionoscope.}
 The baseline JEPA model~\citep{weimann2024jepaecg} is tuned for ECG and relies on dataset-specific augmentations, and thus performs well on the dataset it was designed for.
 In this in-domain regime, LeNEPA remains competitive, showing that eliminating augmentations does not preclude useful frozen features.
-We then test fixed-recipe reuse by training both LeNEPA and JEPA again on Diag while keeping each method's recipe unchanged.
-As shown by Figure~\ref{fig:dynamics_best_layer_classification_transfer}, the JEPA configuration that is strong on PTB-XL is weaker when reused unchanged on Diag: JEPA-Diag's training gains shrink markedly, whereas LeNEPA-Diag retains strong training gains and beats JEPA-Diag both in final performance and training dynamics.
-This does not rule out a Diag-tuned JEPA recipe; a JEPA recipe designed for Diag's signal characteristics would likely recover competitive performance. Rather, the experiment identifies \emph{ECG-masking assumptions}---the semantic tie between JEPA's view recipe and ECG morphology---as a source of fragility when that recipe is reused on a structurally different signal family.
+We then test fixed-recipe reuse by training both LeNEPA and JEPA again on Aionoscope while keeping each method's recipe unchanged.
+As shown by Figure~\ref{fig:dynamics_best_layer_classification_transfer}, the JEPA configuration that is strong on PTB-XL is weaker when reused unchanged on Aionoscope: JEPA-Aionoscope's training gains shrink markedly, whereas LeNEPA-Aionoscope retains strong training gains and beats JEPA-Aionoscope both in final performance and training dynamics.
+This does not rule out an Aionoscope-tuned JEPA recipe; a JEPA recipe designed for Aionoscope's signal characteristics would likely recover competitive performance. Rather, the experiment identifies \emph{ECG-masking assumptions}---the semantic tie between JEPA's view recipe and ECG morphology---as a source of fragility when that recipe is reused on a structurally different signal family.
 A general-purpose JEPA masking recipe might transfer better, but would still require per-domain view engineering: exactly the cost that a no-augmentation objective avoids by design.
 Finally, Figure~\ref{fig:dynamics_best_layer_classification_transfer} summarizes early learning dynamics under the time-to-gain definition in Section~\ref{sec:evaluation_protocol}.
-On the median AUROC/AUPRC curves, LeNEPA reaches $80\%$ of its final gain after $2$--$5$k updates across PTB-XL and Diag, whereas the faster JEPA readout reaches the same threshold after $5$--$10$k updates; because probes are evaluated every $1{,}000$ steps these thresholds are coarse discrete counts and per-seed timing varies.
+On the median AUROC/AUPRC curves, LeNEPA reaches $80\%$ of its final gain after $2$--$5$k updates across PTB-XL and Aionoscope, whereas the faster JEPA readout reaches the same threshold after $5$--$10$k updates; because probes are evaluated every $1{,}000$ steps these thresholds are coarse discrete counts and per-seed timing varies.
 The $90\%$ threshold is less uniform---LeNEPA reaches it after $5$--$10$k updates, while JEPA typically reaches it after $10$--$15$k updates---so we interpret these observations as qualitative evidence of faster early representation acquisition in this fixed-recipe protocol.
 
 \paragraph{Frozen-encoder check: CauKer to UCR-128.}
@@ -448,13 +448,13 @@ The following diagnostics summarize the main ablations needed to interpret the r
 \section{Ablations and Diagnostics}
 \label{sec:ablations_diagnostics}
 
-Diag acts as diagnostic instrumentation rather than as a paper contribution.
+Aionoscope acts as diagnostic instrumentation rather than as a paper contribution.
 Each generated sequence has known latent factors and categorical/dense targets; SSL pretraining does not use these labels, and they are used only after freezing the backbone to probe which factors are linearly recoverable from each layer.
 
 Table~\ref{tab:ablation_summary} summarizes the controlled ablations behind the main LeNEPA design choices.
 Because the page limit prevents full ablation tables, we report the design-level conclusions here.
 The projector rows test the Guillotine Regularization idea that SSL losses can be applied in a disposable head while evaluating the truncated backbone~\citep{bordes2022guillotine}.
-As Table~\ref{tab:summary_selected_best_last_step} shows, NEPA with a projector (NEPA\,+\,Proj) is already a strong baseline: it outperforms LeNEPA on several dense Diag metrics (MAE, Pearson, $R^2$) while LeNEPA leads on classification (AUROC, AUPRC) and MSE.
+As Table~\ref{tab:summary_selected_best_last_step} shows, NEPA with a projector (NEPA\,+\,Proj) is already a strong baseline: it outperforms LeNEPA on several dense Aionoscope metrics (MAE, Pearson, $R^2$) while LeNEPA leads on classification (AUROC, AUPRC) and MSE.
 The contribution of temporal SIGReg over NEPA\,+\,Proj is therefore most clearly visible on classification and training dynamics, while the dense regression picture is more mixed.
 
 \begin{table*}[t]
@@ -480,7 +480,7 @@ Projector capacity
 \addlinespace
 SIGReg axis
 & Temporal (T) SIGReg versus batch-wise (B), pooled-representation (R), innovation/difference (I), and batch-time (BT) placements
-& Temporal SIGReg is the only single-component placement with sustained frozen-backbone gains across PTB-XL and Diag.
+& Temporal SIGReg is the only single-component placement with sustained frozen-backbone gains across PTB-XL and Aionoscope.
 & Use Temporal SIGReg as the LeNEPA anti-collapse stabilizer. \\
 \addlinespace
 SIGReg layer placement
@@ -506,9 +506,9 @@ The best-layer protocol is an oracle upper bound.
 The key question is therefore whether this oracle choice materially changes the conclusions.
 We check this by comparing oracle selection to a fixed mid-layer readout.
 Table~\ref{tab:layer_selection_sensitivity} compares the oracle best layer with a fixed $L4$ readout and the final transformer layer $L8$ for LeNEPA classification results.
-The classification optima are concentrated in the middle of the backbone: PTB-XL peaks at $L5$, while Diag and the best UCR checkpoint peak at $L4$.
-Across the five-seed PTB-XL and five-seed Diag classification evaluations, using the fixed $L4$ readout removes almost all of the oracle advantage, whereas using the final layer can be substantially worse.
-Thus, the LeNEPA classification conclusions do not rely on per-dataset layer tuning; dense Diag probes are more metric-dependent and should be read primarily as diagnostics of where information appears in the backbone.
+The classification optima are concentrated in the middle of the backbone: PTB-XL peaks at $L5$, while Aionoscope and the best UCR checkpoint peak at $L4$.
+Across the five-seed PTB-XL and five-seed Aionoscope classification evaluations, using the fixed $L4$ readout removes almost all of the oracle advantage, whereas using the final layer can be substantially worse.
+Thus, the LeNEPA classification conclusions do not rely on per-dataset layer tuning; dense Aionoscope probes are more metric-dependent and should be read primarily as diagnostics of where information appears in the backbone.
 
 \begin{table}[t]
 \centering
@@ -521,8 +521,8 @@ Dataset & Metric & Oracle layer & Oracle & Fixed $L4$ ($\Delta$) & Final $L8$ ($
 \midrule
 PTB-XL & AUROC & $L5$ & $0.880$ & $0.880$ ($0.000$) & $0.835$ ($-0.045$) \\
 PTB-XL & AUPRC & $L5$ & $0.287$ & $0.285$ ($-0.002$) & $0.203$ ($-0.084$) \\
-Diag & AUROC & $L4$ & $0.920$ & $0.920$ ($0.000$) & $0.895$ ($-0.025$) \\
-Diag & AUPRC & $L4$ & $0.650$ & $0.650$ ($0.000$) & $0.607$ ($-0.043$) \\
+Aionoscope & AUROC & $L4$ & $0.920$ & $0.920$ ($0.000$) & $0.895$ ($-0.025$) \\
+Aionoscope & AUPRC & $L4$ & $0.650$ & $0.650$ ($0.000$) & $0.607$ ($-0.043$) \\
 UCR-128 & Accuracy & $L4$ & $77.65$ & $77.65$ ($0.00$) & $75.10$ ($-2.55$) \\
 \bottomrule
 \end{tabular}
@@ -530,9 +530,9 @@ UCR-128 & Accuracy & $L4$ & $77.65$ & $77.65$ ($0.00$) & $75.10$ ($-2.55$) \\
 
 \begin{figure*}[p]
 \centering
-\includegraphics[width=\textwidth]{figures/last_step_by_layer_lines_anonymized.pdf}
-\caption{Last-step (step $20{,}000$) layer-wise frozen-backbone probe results. We report PTB-XL (top row; AUROC/AUPRC) and Diag \emph{basic-components} results (bottom rows; AUROC/AUPRC and MSE/MAE/Pearson/$R^2$). Each line corresponds to a method; points denote probed layers $0$--$8$.}
-\Description{Line plots of frozen-backbone probe performance across backbone layers for PTB-XL and Diag diagnostic metrics.}
+\includegraphics[width=\textwidth]{figures/last_step_by_layer_lines.pdf}
+\caption{Last-step (step $20{,}000$) layer-wise frozen-backbone probe results. We report PTB-XL (top row; AUROC/AUPRC) and Aionoscope \emph{basic-components} results (bottom rows; AUROC/AUPRC and MSE/MAE/Pearson/$R^2$). Each line corresponds to a method; points denote probed layers $0$--$8$.}
+\Description{Line plots of frozen-backbone probe performance across backbone layers for PTB-XL and Aionoscope diagnostic metrics.}
 \label{fig:last_step_by_layer_lines}
 \end{figure*}
 
@@ -541,11 +541,11 @@ UCR-128 & Accuracy & $L4$ & $77.65$ & $77.65$ ($0.00$) & $75.10$ ($-2.55$) \\
 
 While LeNEPA removes one source of time-series SSL engineering by avoiding augmentations, our current study tests recipe portability rather than claiming a foundation encoder.
 The convolutional tokenizer still depends on dataset-specific design choices such as kernel size and stride, implicitly assumes regular sampling, and may limit transfer across signals with different temporal scales.
-Although the PTB-XL/Diag fixed-recipe runs use the same temporal SIGReg setting, SIGReg still introduces scale and placement hyperparameters; the CauKer/UCR run uses a smaller temporal scale in a different tokenizer configuration, so principled defaults across dataset scales and tokenizers remain future work.
-Diag is also an anonymized synthetic diagnostic benchmark whose full specification is provided in a concurrent submission.
+Although the PTB-XL/Aionoscope fixed-recipe runs use the same temporal SIGReg setting, SIGReg still introduces scale and placement hyperparameters; the CauKer/UCR run uses a smaller temporal scale in a different tokenizer configuration, so principled defaults across dataset scales and tokenizers remain future work.
+Aionoscope is also a synthetic diagnostic benchmark whose full specification is outside the scope of this paper.
 Some diagnostic analyses and baseline comparisons still report best-layer values; those should be treated as oracle upper bounds unless a layer is fixed a priori or selected using labeled validation data.
 For LeNEPA classification, the reported last-step readout is fixed to $L4$ and is stable relative to the oracle choice (Table~\ref{tab:layer_selection_sensitivity}).
-The UCR-128 frozen-encoder check broadens the evidence beyond PTB-XL and Diag, but it is still univariate and uses one pretraining seed; broader UEA-style multivariate evaluations remain necessary.
+The UCR-128 frozen-encoder check broadens the evidence beyond PTB-XL and Aionoscope, but it is still univariate and uses one pretraining seed; broader UEA-style multivariate evaluations remain necessary.
 
 \section{Conclusion}
 \label{sec:conclusion}
@@ -555,7 +555,7 @@ We studied this issue as a \emph{fixed-recipe stress test}: keep each method's S
 This setting is intentionally narrower than fully tuned benchmark comparison; it measures the cost of recipe reuse, not the best attainable performance after retuning.
 
 We proposed \textbf{LeNEPA}, a no-augmentation next-embedding prediction architecture that replaces EMA/stop-gradient stabilization with temporal SIGReg and applies the predictive loss in a disposable projected space.
-Under the PTB-XL/Diag fixed-horizon protocol, an ECG-tuned JEPA recipe remains strong in-domain but weakens when reused unchanged on Diag, while LeNEPA preserves useful frozen-probe gains under the same unchanged-recipe rule.
+Under the PTB-XL/Aionoscope fixed-horizon protocol, an ECG-tuned JEPA recipe remains strong in-domain but weakens when reused unchanged on Aionoscope, while LeNEPA preserves useful frozen-probe gains under the same unchanged-recipe rule.
 The learning curves also suggest faster early representation acquisition for LeNEPA in this protocol, though the evidence should be read as a fixed-recipe result rather than a claim about optimally tuned JEPA.
 
 As a separate frozen-encoder check, a CauKer-pretrained LeNEPA checkpoint falls in the range of protocol-matched UCR-128 Random-Forest anchors while avoiding handcrafted augmentations and using a causal backbone.

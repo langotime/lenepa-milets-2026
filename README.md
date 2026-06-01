@@ -2,29 +2,16 @@
 
 This repository is a clean extraction of the code, experiment manifests, result tables, and paper assets used for the LeNEPA MiLeTS/KDD 2026 submission.
 
-It is not the Aionoscope paper repository. The synthetic diagnostic benchmark is used here only as an evaluation/data-generation tool. In historical run names and scripts it appears as `AIONO` or `toyts`; the paper-facing name is `Diag`.
+It is not the Aionoscope paper repository. Aionoscope is used here as an evaluation/data-generation tool for the LeNEPA fixed-recipe experiments.
 
 ## What Is Included
 
-- LeNEPA/NEPA/JEPA training code from the historical `ecg_jepa` source tree.
-- Paper configs for PTB-XL, Diag/Aionoscope basic components, and CauKer2M.
-- Legacy job scripts under `experiments/legacy_job_scripts/` for provenance.
+- LeNEPA/NEPA/JEPA training code needed to reproduce the paper runs.
+- Paper configs for PTB-XL, Aionoscope basic components, and CauKer2M.
 - Machine-readable tables under `results/tables/`.
-- Compressed W&B history exports under `results/wandb_export/` for offline figure/table regeneration.
 - Paper source and the figures/tables used by the submitted manuscript under `paper/`.
 
 Raw datasets, checkpoints, W&B run directories, VM logs, Hydra multiruns, and local outputs are intentionally not included.
-
-## Provenance
-
-The source code was extracted read-only from:
-
-```text
-/mnt/t0-train-shared/lejepa/ecg_jepa
-git commit: 053f8e7
-```
-
-The old working directory was not modified. Legacy scripts still contain the old absolute paths and should be treated as provenance unless edited for a new machine.
 
 ## Setup
 
@@ -45,7 +32,6 @@ export PTBXL_ROOT=/path/to/ptb-xl-a-large-publicly-available-electrocardiography
 export PTBXL_NPY=${PTBXL_ROOT}.npy
 export CAUKER_PARQUET=/path/to/CauKer2M_L5000.parquet
 export UCR_ROOT=/path/to/UCRArchive_2018
-export WANDB_PROJECT=ECG-LeJEPA
 ```
 
 ## Data
@@ -56,7 +42,7 @@ PTB-XL is not vendored. Build the NumPy dump once:
 uv run python -m scripts.dump_data --data-dir "$PTBXL_ROOT" --dataset ptb-xl
 ```
 
-Diag/Aionoscope data is generated online by the `aiono` dependency; no static data file is required.
+Aionoscope data is generated online by the `aiono` dependency; no static data file is required.
 
 CauKer2M and UCR are not vendored. The CauKer run expects a parquet file via `CAUKER_PARQUET`; UCR evaluation expects the UCR Archive 2018 root via `UCR_ROOT`.
 
@@ -67,7 +53,7 @@ PTB-XL LeNEPA, seed 0:
 ```bash
 uv run python -m pretrain \
   --config-name ViTXS_ptbxl \
-  run_name=PTBXL_LENEPA_SIGREGT20_L0-8_PD0_PROJ_s0 \
+  run_name=ptbxl_lenepa_sigregt20_seed0 \
   out="$OUTPUT_DIR" \
   seed=0 \
   steps=20000 \
@@ -103,12 +89,12 @@ uv run python -m pretrain \
   use_projector=true
 ```
 
-Diag LeNEPA, seed 0:
+Aionoscope LeNEPA, seed 0:
 
 ```bash
 uv run python -m pretrain \
   --config-name ViTXS_aiono \
-  run_name=AIONO_LENEPA_SIGREGT20_L0-8_PD0_PROJ_s0 \
+  run_name=aionoscope_lenepa_sigregt20_seed0 \
   dataset=aiono_basic_components_imbalanced \
   offline_probe_dataset=same_as_train \
   out="$OUTPUT_DIR" \
@@ -149,7 +135,7 @@ CauKer2M to UCR frozen-encoder run:
 uv run python -m pretrain \
   --config-name ViTXS_cauker2m \
   offline_probe_dataset=aiono_basic_components_balanced \
-  run_name=CAUKER2M_L5000_LENEPA_SIGREGT2p5_L0-8_PD0_PROJ_LR2x_MSSE_PATCHNORM_D256_OPTOYTSBCBAL_s0_UCRinterp5000 \
+  run_name=cauker2m_lenepa_sigregt2p5_ucr_seed0 \
   out="$OUTPUT_DIR" \
   seed=0 \
   stop_after_steps=20000 \
@@ -178,16 +164,11 @@ uv run python -m pretrain \
   final_learning_rate=0.0002
 ```
 
-The broader matrix is summarized in `experiments/manifests/main_matrix.csv`. Submitted paper summaries use seeds `0..4`; exports for seeds `5..9` are included as extra provenance and should not be mixed into submitted tables unless explicitly noted.
+The broader matrix is summarized in `experiments/manifests/main_matrix.csv`. Submitted paper summaries use seeds `0..4` for the PTB-XL/Aionoscope fixed-horizon matrix and seed `0` for the CauKer-to-UCR frozen-encoder check.
 
 ## Rebuilding Results
 
-The current paper tables/figures are already checked in. To regenerate the main W&B-derived assets from the included exports without calling the W&B API:
-
-```bash
-uv run python -m utils.wandb_lenepa_paper_plots --no-download --skip-existing
-uv run python -m utils.wandb_lenepa_improvement_thresholds
-```
+The current paper tables/figures are already checked in. W&B histories are not part of this repository.
 
 To rebuild the UCR layer profile from local `ucr_step*.json` files:
 

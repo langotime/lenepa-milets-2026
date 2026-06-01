@@ -10,7 +10,7 @@ defaults:
 run_name: ???  # W&B run name (REQUIRED)
 
 # Runtime keys (dump backend only)
-data: null  # must stay null when using the synthetic Aionoscope backend (`aiono`, legacy alias: `aiono`)
+data: null  # must stay null when using the synthetic Aionoscope backend (`aiono`)
 offline_probe_data: null  # Optional mapping for offline probe dump datasets (e.g., PTB-XL).
 
 # Runtime keys (optional)

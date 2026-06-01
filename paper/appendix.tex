@@ -279,7 +279,7 @@ Temporal SIGReg layers & $\{0,8\}$ \\
 \section{Supplementary Experimental Details}
 \label{sec:appendix_experiments}
 
-This appendix specifies the fixed-horizon protocol and the main PTB-XL/Diag experiment matrix used in this paper.
+This appendix specifies the fixed-horizon protocol and the main PTB-XL/Aionoscope experiment matrix used in this paper.
 Those runs use the same ViT-XS backbone (depth $8$) and are evaluated with frozen-backbone linear probes.
 The UCR-128 result in Table~\ref{tab:ucr_mantis_comparison} is an external frozen-feature Random Forest check and is documented separately below.
 
@@ -287,8 +287,8 @@ The UCR-128 result in Table~\ref{tab:ucr_mantis_comparison} is an external froze
 \label{sec:appendix_experiments_protocol}
 
 \paragraph{Datasets.}
-We report main-matrix results on (i) Diag, an anonymized synthetic diagnostic \emph{basic-components} benchmark (classification and dense regression targets) introduced in a concurrent anonymized submission, and (ii) PTB-XL~\citep{wagner2020ptbxl} (real ECG; classification).
-We use Diag only as diagnostic instrumentation during our experiments, thanks to its configurability and the availability of fine-grained labels for both categorical and dense targets.
+We report main-matrix results on (i) Aionoscope \emph{basic-components} (classification and dense regression targets), and (ii) PTB-XL~\citep{wagner2020ptbxl} (real ECG; classification).
+We use Aionoscope only as diagnostic instrumentation during our experiments, thanks to its configurability and the availability of fine-grained labels for both categorical and dense targets.
 We use PTB-XL to verify that our results transfer to real-world datasets as a sanity check; it is a well known and well studied ECG benchmark with good categorical label coverage.
 We additionally report UCR-128~\citep{dau2019ucr} as a broad univariate benchmark check against Mantis-family frozen-feature results, with NuTime and MOMENT included as context baselines under the MantisV2 Random-Forest protocol.
 
@@ -302,18 +302,18 @@ Because SSL pretraining is typically run for long horizons and often lacks a rel
 We therefore train to $20{,}000$ steps and report last-step probe results to stress-test whether SIGReg provides sustained regularization throughout pretraining rather than only improving early training.
 
 \paragraph{Layer-wise frozen-backbone evaluation.}
-For PTB-XL and Diag, we train offline linear probes on frozen per-layer representations for layers $0$--$8$ and evaluate them every $1{,}000$ steps (including step $0$).
+For PTB-XL and Aionoscope, we train offline linear probes on frozen per-layer representations for layers $0$--$8$ and evaluate them every $1{,}000$ steps (including step $0$).
 Unless stated otherwise, we report the best-layer value at the last offline-probe evaluation step.
 For UCR-128, we follow the Mantis frozen-feature protocol by training a Random Forest classifier on each dataset's frozen train embeddings and evaluating on its test embeddings, then averaging accuracy across all 128 datasets.
 
 \paragraph{Seeds and metric aggregation.}
-For the PTB-XL/Diag matrix, we repeat each (objective configuration, dataset) pair with five independent random seeds $s\in\{0,1,2,3,4\}$.
+For the PTB-XL/Aionoscope matrix, we repeat each (objective configuration, dataset) pair with five independent random seeds $s\in\{0,1,2,3,4\}$.
 Paper-facing plots and tables aggregate across seeds as $\mathrm{median}\pm\mathrm{std}$, where $\mathrm{std}$ is the sample standard deviation (ddof$=1$); error bars show $\pm\mathrm{std}$.
 For each seed, we compute best-layer metrics, selecting the layer that maximizes (or minimizes, as appropriate) each metric at each evaluation step.
 We then aggregate these per-seed values across seeds.
 For delta summaries, we compute, for each metric and seed, the difference between the best-layer value at the last evaluation step and at step $0$, with best-layer selection performed independently at each step.
 The run seed controls stochasticity in model initialization and training (including masking); for PTB-XL it also determines the training DataLoader order and random crop offsets.
-Diag generation is driven by explicit stream seeds, which are fixed in our configs, so varying $s$ changes optimization/model randomness but not the diagnostic data stream.
+Aionoscope generation is driven by explicit stream seeds, which are fixed in our configs, so varying $s$ changes optimization/model randomness but not the diagnostic data stream.
 Finally, offline-probe optimization runs in an RNG-isolated context seeded deterministically from the run seed and evaluation step, so that probing does not perturb the training RNG state.
 The UCR-128 LeNEPA result is currently seed $0$ only.
 
@@ -323,10 +323,10 @@ JEPA, in contrast, is typically evaluated with CLS-token readout.
 To ensure that observed differences between JEPA and NEPA/LeNEPA are not artifacts of this readout mismatch, we evaluate JEPA with both CLS-token and mean-pooling readouts.
 We observe that this choice can affect the final probe scores, but the effect is dataset-dependent and does not qualitatively change the training dynamics, which are the focus of this paper.
 
-\subsection{Diag Diagnostics: Understanding Model Strengths and Blind Spots}
-\label{sec:appendix_experiments_diag_diagnostics}
+\subsection{Aionoscope Diagnostics: Understanding Model Strengths and Blind Spots}
+\label{sec:appendix_experiments_aionoscope_diagnostics}
 
-Diag makes representation learning \emph{diagnosable}. Each generated sequence is produced from a latent state $s$ with known generative factors, and the generator returns ground-truth targets $y=\ell(s)$ (categorical labels and dense attributes such as noise scale, periodic frequency/amplitude, trend parameters, and event timing). We train all encoders self-supervised without using these targets, then freeze the backbone and fit lightweight linear probes to predict each target from every layer. Because the targets are available for every sample (full label coverage) and the data stream is unbounded and reproducible, we can evaluate a large set of dense attributes without additional annotation effort and use them as diagnostic probes into what information is present in the learned representations.
+Aionoscope makes representation learning \emph{diagnosable}. Each generated sequence is produced from a latent state $s$ with known generative factors, and the generator returns ground-truth targets $y=\ell(s)$ (categorical labels and dense attributes such as noise scale, periodic frequency/amplitude, trend parameters, and event timing). We train all encoders self-supervised without using these targets, then freeze the backbone and fit lightweight linear probes to predict each target from every layer. Because the targets are available for every sample (full label coverage) and the data stream is unbounded and reproducible, we can evaluate a large set of dense attributes without additional annotation effort and use them as diagnostic probes into what information is present in the learned representations.
 
 \paragraph{From per-target probes to a compact diagnostic signature.}
 Dense targets have heterogeneous scales and noise, so aggregate metrics (e.g., average MSE) can obscure what a model learns well versus what it systematically ignores. To obtain a comparable score per dense target, we summarize the change in best-layer probe performance between step $0$ and step $20{,}000$ using a step-$0$ normalized improvement:
@@ -339,7 +339,7 @@ where $m_0$ and $m_{20{,}000}$ denote the best-layer probe metric at the corresp
 This yields a compact \emph{diagnostic signature} that can be compared across models and ablations.
 
 \paragraph{What the radar grid reveals in our runs.}
-To disentangle objective-inherent behavior from artifacts of class frequency, we evaluate two versions of the basic-components stream: (i) a \textbf{balanced} sampler with uniform component weights (Figure~\ref{fig:diag_balanced_basic_components_combined_radar_grid}) and (ii) an \textbf{imbalanced} sampler used in our main matrix (Figure~\ref{fig:diag_combined_radar_grid}), where six components are sampled $50\times$ more rarely than the rest.
+To disentangle objective-inherent behavior from artifacts of class frequency, we evaluate two versions of the basic-components stream: (i) a \textbf{balanced} sampler with uniform component weights (Figure~\ref{fig:aionoscope_balanced_basic_components_combined_radar_grid}) and (ii) an \textbf{imbalanced} sampler used in our main matrix (Figure~\ref{fig:aionoscope_combined_radar_grid}), where six components are sampled $50\times$ more rarely than the rest.
 The balanced setting isolates what each objective encodes when all factors are equally represented in the pretraining stream.
 
 \begin{itemize}
@@ -357,27 +357,27 @@ It also provides a practical check for downstream ``querying'' applications (e.g
 \centering
 \begin{subfigure}{\textwidth}
   \centering
-  \includegraphics[width=\textwidth,height=0.40\textheight,keepaspectratio]{figures/diag_balanced_basic_components_combined_radar_grid.pdf}
+  \includegraphics[width=\textwidth,height=0.40\textheight,keepaspectratio]{figures/aionoscope_balanced_basic_components_combined_radar_grid.pdf}
   \caption{Balanced sampler (uniform component weights).}
-  \label{fig:diag_balanced_basic_components_combined_radar_grid}
+  \label{fig:aionoscope_balanced_basic_components_combined_radar_grid}
 \end{subfigure}
 
 \vspace{0.75em}
 
 \begin{subfigure}{\textwidth}
   \centering
-  \includegraphics[width=\textwidth,height=0.40\textheight,keepaspectratio]{figures/diag_combined_radar_grid.pdf}
+  \includegraphics[width=\textwidth,height=0.40\textheight,keepaspectratio]{figures/aionoscope_combined_radar_grid.pdf}
   \caption{Imbalanced sampler with rare components.}
-  \label{fig:diag_combined_radar_grid}
+  \label{fig:aionoscope_combined_radar_grid}
 \end{subfigure}
 
-\caption{Diag \emph{basic-components} signatures on (a) balanced and (b) imbalanced samplers. Panel (a) includes four objectives (LeNEPA T20, NEPA, JEPA CLS, JEPA MEAN); panel (b) includes LeNEPA T20, NEPA, and JEPA CLS. Left column: per-signal categorical improvements in best-layer AUROC (top) and AUPRC (bottom). Middle and right columns: dense improvements for MSE (top row) and Pearson (bottom row), aggregated by \texttt{target\_signal} families (middle) and by \texttt{target\_metric} types with $>1$ targets (right). For each signal/target we compute a step-$0$ normalized improvement between step $0$ and step $20{,}000$ using the best layer (layers $0$--$8$, selected independently at each step) and clamp scores to $[0,1]$. Dense panels report the median across targets within each group. Higher scores indicate larger relative improvements.}
+\caption{Aionoscope \emph{basic-components} signatures on (a) balanced and (b) imbalanced samplers. Panel (a) includes four objectives (LeNEPA T20, NEPA, JEPA CLS, JEPA MEAN); panel (b) includes LeNEPA T20, NEPA, and JEPA CLS. Left column: per-signal categorical improvements in best-layer AUROC (top) and AUPRC (bottom). Middle and right columns: dense improvements for MSE (top row) and Pearson (bottom row), aggregated by \texttt{target\_signal} families (middle) and by \texttt{target\_metric} types with $>1$ targets (right). For each signal/target we compute a step-$0$ normalized improvement between step $0$ and step $20{,}000$ using the best layer (layers $0$--$8$, selected independently at each step) and clamp scores to $[0,1]$. Dense panels report the median across targets within each group. Higher scores indicate larger relative improvements.}
 \end{figure*}
 
 \subsection{Experiment Matrix}
 \label{sec:appendix_experiments_matrix}
 
-Across two datasets (Diag \emph{basic-components} and PTB-XL), we compare three families of self-supervised pretraining objectives:
+Across two datasets (Aionoscope \emph{basic-components} and PTB-XL), we compare three families of self-supervised pretraining objectives:
 \begin{itemize}
   \item \textbf{JEPA:} an augmentation-based JEPA baseline, evaluated with both CLS-token and mean-pooling readouts.
   \item \textbf{NEPA:} a next-embedding prediction baseline stabilized with stop-gradient (mean pooling).
@@ -395,14 +395,14 @@ Figure~\ref{fig:summary_last_step_delta_from_step0_bars} summarizes the best-lay
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/summary_last_step_delta_from_step0_bars.pdf}
-\caption{Last-step (step $20{,}000$) best-layer frozen-backbone probe deltas relative to step $0$ (untrained initialization) on PTB-XL and Diag. For each method and metric, the reported value is the best score over probed layers $0$--$8$, selected separately at step $0$ and at the last step.}
+\caption{Last-step (step $20{,}000$) best-layer frozen-backbone probe deltas relative to step $0$ (untrained initialization) on PTB-XL and Aionoscope. For each method and metric, the reported value is the best score over probed layers $0$--$8$, selected separately at step $0$ and at the last step.}
 \label{fig:summary_last_step_delta_from_step0_bars}
 \end{figure*}
 
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/summary_last_step_bars.pdf}
-\caption{Absolute last-step (step $20{,}000$) best-layer frozen-backbone probe performance on PTB-XL and Diag. Bars show macro AUROC/AUPRC for both datasets and MSE/MAE/Pearson/$R^2$ for Diag. For each method and metric, the reported value is the best score over probed layers $0$--$8$.}
+\caption{Absolute last-step (step $20{,}000$) best-layer frozen-backbone probe performance on PTB-XL and Aionoscope. Bars show macro AUROC/AUPRC for both datasets and MSE/MAE/Pearson/$R^2$ for Aionoscope. For each method and metric, the reported value is the best score over probed layers $0$--$8$.}
 \label{fig:summary_last_step_bars}
 \end{figure*}
 
@@ -414,7 +414,7 @@ Table~\ref{tab:projector_ablation_last_step} reports last-step best-layer probe 
 
 \input{tables/projector_ablation_last_step.tex}
 
-Across the $24$ metric comparisons in Table~\ref{tab:projector_ablation_last_step} (two PTB-XL metrics and six Diag metrics for each of three configurations), projector-enabled variants are better in $22/24$ cases.
+Across the $24$ metric comparisons in Table~\ref{tab:projector_ablation_last_step} (two PTB-XL metrics and six Aionoscope metrics for each of three configurations), projector-enabled variants are better in $22/24$ cases.
 The only exception is NEPA on PTB-XL classification, where the no-projector variant is slightly better.
 Therefore, in the remainder of this work we use LeNEPA \emph{only} with the projector enabled, and report both NEPA and NEPA~+Proj for clarity.
 
@@ -444,27 +444,27 @@ We hypothesize that SIGReg is most effective when it directly counterbalances th
 
 Finally, we compare these single-component variants to the multi-term reference configuration \texttt{BRI20} used in the main matrix ($\lambda_{\text{B}}=\lambda_{\text{R}}=\lambda_{\Delta}=20$ with the layer sets above).
 Figure~\ref{fig:sigreg_component_ablations_dynamics} reports best-layer transfer dynamics (over layers $0$--$8$).
-The top row shows AUROC/AUPRC for PTB-XL and Diag, while the bottom row shows Diag dense-target metrics (MSE/MAE/Pearson/$R^2$).
+The top row shows AUROC/AUPRC for PTB-XL and Aionoscope, while the bottom row shows Aionoscope dense-target metrics (MSE/MAE/Pearson/$R^2$).
 In our setup, temporal SIGReg is the only single-component placement that consistently yields sustained improvements in frozen-backbone transfer performance across both datasets.
 
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/sigreg_component_ablations_dynamics.pdf}
-\caption{SIGReg component ablations (seed $0$ only; projector enabled): best-layer transfer dynamics for time-only (\texttt{T20}), batch-only (\texttt{B20}), representation-only (\texttt{R20}), innovation-only (\texttt{I20}), batch-time-only (\texttt{BT20}), and the multi-term reference configuration (\texttt{BRI20}). Top row: classification AUROC/AUPRC for PTB-XL and Diag. Bottom row: Diag dense-target metrics (MSE/MAE/Pearson/$R^2$), where lower is better for MSE/MAE. Best layer is selected independently at each step (over layers $0$--$8$).}
+\caption{SIGReg component ablations (seed $0$ only; projector enabled): best-layer transfer dynamics for time-only (\texttt{T20}), batch-only (\texttt{B20}), representation-only (\texttt{R20}), innovation-only (\texttt{I20}), batch-time-only (\texttt{BT20}), and the multi-term reference configuration (\texttt{BRI20}). Top row: classification AUROC/AUPRC for PTB-XL and Aionoscope. Bottom row: Aionoscope dense-target metrics (MSE/MAE/Pearson/$R^2$), where lower is better for MSE/MAE. Best layer is selected independently at each step (over layers $0$--$8$).}
 \label{fig:sigreg_component_ablations_dynamics}
 \end{figure*}
 
-\subsection{Diag Dense Target Training Dynamics}
-\label{sec:appendix_experiments_diag_dense_dynamics}
+\subsection{Aionoscope Dense Target Training Dynamics}
+\label{sec:appendix_experiments_aionoscope_dense_dynamics}
 
-Figure~\ref{fig:diag_dynamics_best_layer_dense} reports training dynamics for dense regression targets on the Diag \emph{basic-components} benchmark.
+Figure~\ref{fig:aionoscope_dynamics_best_layer_dense} reports training dynamics for dense regression targets on the Aionoscope \emph{basic-components} benchmark.
 For each metric and each offline-probe evaluation step, we plot the best-layer value over probed layers $0$--$8$.
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=\textwidth]{figures/diag_dynamics_best_layer_dense.pdf}
-\caption{Diag \emph{basic-components} dense-target dynamics: best-layer over layers $0$--$8$ frozen-backbone probe performance over training steps for MSE/MAE/Pearson/$R^2$.}
-\label{fig:diag_dynamics_best_layer_dense}
+\includegraphics[width=\textwidth]{figures/aionoscope_dynamics_best_layer_dense.pdf}
+\caption{Aionoscope \emph{basic-components} dense-target dynamics: best-layer over layers $0$--$8$ frozen-backbone probe performance over training steps for MSE/MAE/Pearson/$R^2$.}
+\label{fig:aionoscope_dynamics_best_layer_dense}
 \end{figure*}
 
 \subsection{JEPA Masking Fragility}

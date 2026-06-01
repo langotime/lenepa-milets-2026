@@ -585,7 +585,7 @@ def _build_aiono_backend(
     train_seed_value: int,
   ) -> tuple[list[int], int, list[int], dict[int, int]]:
     """Resolve logical validation seeds and their generator seeds."""
-    # Step 1: accept either the new benchmark protocol or the legacy single val seed.
+    # Step 1: accept either the benchmark protocol or a single validation seed.
     if 'validation_seed_values' in mapping:
       raw_values = mapping.get('validation_seed_values')
       if not isinstance(raw_values, list) or not raw_values:
@@ -1242,8 +1242,8 @@ def _build_aiono_backend(
             enabled_key='piecewise_linear_trend',
           )
         )
-      # Step 3a: benchmark-labeled runs consume the shared upstream resolver; legacy
-      # Aiono presets keep the historical local periodic ranges and are marked
+      # Step 3a: benchmark-labeled runs consume the shared upstream resolver; local
+      # Aiono presets keep the previous periodic ranges and are marked
       # non-comparable in metadata.
       if 'sine' in component_keys:
         if periodic_contract is None:

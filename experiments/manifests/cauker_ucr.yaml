@@ -1,7 +1,6 @@
 name: cauker_ucr_lenepa_msse_patchnorm_d256
 paper_section: UCR frozen-encoder check
-legacy_run_name: CAUKER2M_L5000_LENEPA_SIGREGT2p5_L0-8_PD0_PROJ_LR2x_MSSE_PATCHNORM_D256_OPTOYTSBCBAL_s0_UCRinterp5000
-source_script: experiments/legacy_job_scripts/cauker_ucr/CAUKER2M_L5000_LENEPA_SIGREGT2p5_L0-8_PD0_PROJ_LR2x_MSSE_PATCHNORM_D256_OPTOYTSBCBAL_s0_UCRinterp5000.sh
+run_label: cauker2m_lenepa_sigregt2p5_ucr_seed0
 config: ViTXS_cauker2m
 seed: 0
 steps: 20000

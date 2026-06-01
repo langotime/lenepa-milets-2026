@@ -15,7 +15,7 @@ def _import_wfdb():
   crashes `set_index` during `wfdb` import.
 
   We temporarily disable `pd.options.future.infer_string` during the import to
-  force legacy object dtype for those string columns, then restore the prior
+  force object dtype for those string columns, then restore the prior
   value.
   """
   import pandas as pd

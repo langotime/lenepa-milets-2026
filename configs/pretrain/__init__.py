@@ -322,7 +322,7 @@ class Config:
         raise ValueError(f'{name} must be unique, got {normalized}')
       return tuple(normalized)
 
-    # Seeding configuration (legacy vs split mode).
+    # Seeding configuration (single-seed vs split-seed mode).
     seed_fields = {
       'seed_init': self.seed_init,
       'seed_data': self.seed_data,
@@ -336,7 +336,7 @@ class Config:
       _validate_optional_seed(name, value)
 
     if self.seed is not None and split_mode_requested:
-      raise ValueError('seed and seed_* cannot both be set. Use either legacy seed or split seeds.')
+      raise ValueError('seed and seed_* cannot both be set. Use either a single seed or split seeds.')
     if self.seed is None and split_mode_requested:
       missing = [name for name, value in seed_fields.items() if value is None]
       if missing:

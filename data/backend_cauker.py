@@ -100,7 +100,7 @@ class CauKerParquetDataset(Dataset[torch.Tensor]):
 
 
 def _resolve_dataloader_base_seed(config: configs.pretrain.Config) -> int | None:
-  """Return the base seed used for DataLoader order (legacy `seed` or split `seed_data`)."""
+  """Return the base seed used for DataLoader order (`seed` or split `seed_data`)."""
   if config.seed is not None:
     return int(config.seed)
   if config.seed_data is not None:
