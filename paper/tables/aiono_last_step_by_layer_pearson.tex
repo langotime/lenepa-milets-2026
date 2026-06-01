@@ -1,0 +1,18 @@
+\begin{table}[t]
+\centering
+\scriptsize
+\caption{Aionoscope: Pearson by layer at the last eval step (step=20000). Each cell reports $\mathrm{median}(\mathrm{std})$ across seeds (std shown in $10^{-3}$ units); best layer by median is bold; layers within 90\% of best (by median) are underlined.}
+\label{tab:aiono_last_step_by_layer_pearson}
+\begin{tabular}{lrrrrrrrrr}
+\toprule
+method & L0 & L1 & L2 & L3 & L4 & L5 & L6 & L7 & L8 \\
+\midrule
+JEPA (CLS) & 0.000(0) & 0.354(13) & 0.418(8) & \underline{0.435(17)} & \underline{0.450(10)} & \underline{0.465(11)} & \underline{0.462(12)} & \textbf{0.471(14)} & \underline{0.466(13)} \\
+JEPA (Mean) & 0.235(6) & 0.390(12) & \underline{0.422(9)} & \underline{0.438(14)} & \underline{0.446(13)} & \underline{0.448(17)} & \underline{0.454(14)} & \textbf{0.459(12)} & \underline{0.453(14)} \\
+NEPA & 0.241(4) & 0.456(10) & \underline{0.499(10)} & \underline{0.510(7)} & \underline{0.514(5)} & \underline{0.515(13)} & \underline{0.495(33)} & 0.341(54) & \textbf{0.518(5)} \\
+NEPA +Proj & 0.234(5) & 0.522(13) & \underline{0.568(10)} & \underline{0.599(11)} & \textbf{0.608(7)} & \underline{0.607(9)} & \underline{0.553(11)} & 0.508(10) & 0.466(7) \\
+LeNEPA (T20 L0-8) & 0.284(9) & 0.494(10) & \underline{0.562(14)} & \underline{0.569(12)} & \textbf{0.579(9)} & \underline{0.578(10)} & \underline{0.578(6)} & \underline{0.576(8)} & \underline{0.575(6)} \\
+LeNEPA (BRI20 L0-8) & 0.246(19) & 0.484(13) & 0.542(9) & \underline{0.560(14)} & \underline{0.561(10)} & \underline{0.546(16)} & \underline{0.565(10)} & \underline{0.566(12)} & \textbf{0.604(5)} \\
+\bottomrule
+\end{tabular}
+\end{table}

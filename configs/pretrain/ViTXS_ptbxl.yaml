@@ -1,0 +1,82 @@
+# @package _global_
+defaults:
+  - dataset: ptbxl
+  - offline_probe_dataset: same_as_train
+  - model: vit_xs
+  - objective: lejepa
+  - _self_
+
+# Runtime keys (REQUIRED - must be provided via CLI or overridden)
+# Example: +run_name=myrun '+data.ptb-xl=/path/dump.npy' +ptb_xl_data_dir=/path/to/ptbxl
+run_name: ???  # W&B run name (REQUIRED)
+data: ???      # Dict mapping dataset name to dump file path (REQUIRED)
+               # Example: +data.mimic-iv-ecg=/path/to/dump.npy
+offline_probe_data: ${data}  # Optional mapping for offline probe dump datasets.
+
+# Runtime keys (optional)
+out: pretrain              # Output directory (checkpoints saved to out/run_name/)
+chkpt: null                # Path to checkpoint to resume from
+amp: bfloat16              # Precision: float32 or bfloat16
+compile: false             # Enable torch.compile
+stop_after_steps: null     # Abort after this many training steps (relative to this run)
+offline_probe_eval_only: false  # Evaluate offline probe at chkpt step then exit (requires chkpt)
+seed: null                # Optional fixed seed (opt-in; default is non-deterministic)
+seed_init: null            # Optional split seed (requires seed=null and all seed_* set)
+seed_data: null            # Optional split seed (requires seed=null and all seed_* set)
+seed_sigreg: null          # Optional split seed (requires seed=null and all seed_* set)
+seed_offline_probe: null   # Optional split seed (requires seed=null and all seed_* set)
+label_exposure_train_log_interval: null  # Optional: log label exposure on the training stream
+label_exposure_offline_probe_log: false  # Optional: log exposure during offline probe optimization
+batch_label_stats_train_log_interval: null  # Optional: log batch label-gap stats on the training stream
+batch_label_stats_rare_bottom_k: null       # Required when batch_label_stats_* is enabled
+ptbxl_train_sampling: uniform               # "uniform" or "weighted_rare"
+ptbxl_train_sampling_alpha: null            # Required when ptbxl_train_sampling="weighted_rare"
+ptb_xl_data_dir: null      # Path to raw PTB-XL directory (required when ptb-xl in datasets)
+
+# masking
+patch_size: 25
+min_block_size: 10
+min_keep_ratio: 0.15
+max_keep_ratio: 0.25
+masking_strategy: remove
+min_keep_ratio_global: 0.50
+max_keep_ratio_global: 0.9
+
+# model overrides
+qkv_bias: True
+bias: True
+
+# training
+steps: 20_000
+batch_size: 256
+encoder_momentum: 0.998
+final_encoder_momentum: 0.9995
+learning_rate: 1.0e-3
+final_learning_rate: 1.0e-6
+learning_rate_warmup_steps: 2_000
+weight_decay: 0.0
+final_weight_decay: 0.0
+opt_betas: [0.9, 0.99]
+opt_eps: 1.0e-6
+gradient_clip: 0
+gradient_accumulation_steps: 1
+checkpoint_interval: 1_000
+
+# online probe (requires --ptb-xl-data-dir)
+probe_lr: 1.0e-1
+probe_weight_decay: 0.0
+probe_eval_interval: 100
+probe_task: all
+
+# offline probe (requires --ptb-xl-data-dir)
+offline_probe_eval_interval: 1000
+offline_probe_task: ${probe_task}
+offline_probe_steps: 5000
+offline_probe_batch_size: 256 #128
+offline_probe_learning_rate: 1.0e-2
+offline_probe_final_learning_rate: 1.0e-2
+offline_probe_learning_rate_warmup_steps: 0
+offline_probe_weight_decay: 0.0 #1.0e-1
+offline_probe_opt_betas: [0.9, 0.999]
+offline_probe_gradient_clip: 1.0
+offline_probe_checkpoint_interval: 200  # eval every N steps and keep best checkpoint

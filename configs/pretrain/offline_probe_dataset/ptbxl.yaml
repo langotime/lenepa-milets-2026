@@ -1,0 +1,5 @@
+# @package _global_
+# Offline probe dataset is PTB-XL, independent from the training dataset.
+offline_probe_source: ptb-xl
+offline_probe_aiono: null
+

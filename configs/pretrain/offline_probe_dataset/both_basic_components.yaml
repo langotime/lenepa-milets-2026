@@ -1,0 +1,8 @@
+# @package _global_
+defaults:
+  - aiono_basic_components_balanced
+  - _self_
+
+# Offline probe datasets include PTB-XL and canonical Aionoscope basic-components.
+offline_probe_source: null
+offline_probe_sources: [ptb-xl, aiono]

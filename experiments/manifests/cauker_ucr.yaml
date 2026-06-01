@@ -1,0 +1,29 @@
+name: cauker_ucr_lenepa_msse_patchnorm_d256
+paper_section: UCR frozen-encoder check
+legacy_run_name: CAUKER2M_L5000_LENEPA_SIGREGT2p5_L0-8_PD0_PROJ_LR2x_MSSE_PATCHNORM_D256_OPTOYTSBCBAL_s0_UCRinterp5000
+source_script: experiments/legacy_job_scripts/cauker_ucr/CAUKER2M_L5000_LENEPA_SIGREGT2p5_L0-8_PD0_PROJ_LR2x_MSSE_PATCHNORM_D256_OPTOYTSBCBAL_s0_UCRinterp5000.sh
+config: ViTXS_cauker2m
+seed: 0
+steps: 20000
+encoder_dim: 256
+ucr:
+  resize_mode: interp512
+  resize_target_length: 5000
+  classifier: rf
+  rf_n_estimators: 200
+lenepa:
+  objective: nepa_sigreg
+  ema_encoder: false
+  pred_depth: 0
+  projector: true
+  proj_dim: 64
+  proj_hidden_dim: 1536
+  temporal_sigreg_lambda: 2.5
+  temporal_sigreg_layers: [0, 8]
+  patch_embed_scalar_stats_mode: patch_norm
+  patch_embed_cnn_dim: 192
+reported:
+  best_checkpoint_step: 17000
+  best_checkpoint_ucr_mean_accuracy_percent: 77.65
+  final_checkpoint_step: 20000
+  final_checkpoint_ucr_mean_accuracy_percent: 77.20

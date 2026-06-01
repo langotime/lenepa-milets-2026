@@ -1,0 +1,18 @@
+\begin{table}[t]
+\centering
+\scriptsize
+\caption{PTB-XL: AUROC by layer at the last eval step (step=20000). Each cell reports $\mathrm{median}(\mathrm{std})$ across seeds (std shown in $10^{-3}$ units); best layer by median is bold; layers within 90\% of best (by median) are underlined.}
+\label{tab:ptbxl_last_step_by_layer_auroc}
+\begin{tabular}{lrrrrrrrrr}
+\toprule
+method & L0 & L1 & L2 & L3 & L4 & L5 & L6 & L7 & L8 \\
+\midrule
+JEPA (CLS) & 0.506(1) & 0.799(9) & \underline{0.813(12)} & \underline{0.844(11)} & \underline{0.858(6)} & \underline{0.870(8)} & \underline{0.880(6)} & \underline{0.886(3)} & \textbf{0.890(3)} \\
+JEPA (Mean) & 0.609(3) & \underline{0.821(6)} & \underline{0.850(4)} & \underline{0.866(5)} & \underline{0.873(5)} & \underline{0.873(6)} & \underline{0.881(6)} & \underline{0.888(5)} & \textbf{0.892(3)} \\
+NEPA & 0.604(6) & \underline{0.805(7)} & \underline{0.827(10)} & \underline{0.847(8)} & \underline{0.856(5)} & \textbf{0.856(5)} & \underline{0.850(6)} & \underline{0.849(6)} & \underline{0.838(6)} \\
+NEPA +Proj & 0.597(5) & \underline{0.822(10)} & \underline{0.840(15)} & \textbf{0.849(9)} & \underline{0.844(12)} & \underline{0.840(8)} & \underline{0.835(9)} & \underline{0.837(14)} & \underline{0.821(7)} \\
+LeNEPA (T20 L0-8) & 0.613(3) & \underline{0.816(4)} & \underline{0.833(11)} & \underline{0.862(12)} & \underline{0.880(6)} & \textbf{0.880(4)} & \underline{0.869(5)} & \underline{0.864(11)} & \underline{0.835(14)} \\
+LeNEPA (BRI20 L0-8) & 0.624(6) & \underline{0.821(4)} & \underline{0.835(9)} & \underline{0.852(7)} & \underline{0.860(6)} & \textbf{0.860(6)} & \underline{0.855(9)} & \underline{0.847(8)} & \underline{0.838(8)} \\
+\bottomrule
+\end{tabular}
+\end{table}

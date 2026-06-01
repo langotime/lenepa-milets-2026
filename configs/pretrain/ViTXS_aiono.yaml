@@ -1,0 +1,72 @@
+# @package _global_
+defaults:
+  - dataset: aiono_basic_components_imbalanced
+  - offline_probe_dataset: same_as_train
+  - model: vit_xs
+  - objective: nepa_sigreg
+  - _self_
+
+# Runtime keys (REQUIRED - must be provided via CLI or overridden)
+run_name: ???  # W&B run name (REQUIRED)
+
+# Runtime keys (dump backend only)
+data: null  # must stay null when using the synthetic Aionoscope backend (`aiono`, legacy alias: `aiono`)
+offline_probe_data: null  # Optional mapping for offline probe dump datasets (e.g., PTB-XL).
+
+# Runtime keys (optional)
+out: pretrain              # Output directory (checkpoints saved to out/run_name/)
+chkpt: null                # Path to checkpoint to resume from
+amp: bfloat16              # Precision: float32 or bfloat16
+compile: false             # Enable torch.compile
+stop_after_steps: null     # Abort after this many training steps (relative to this run)
+seed: null                # Optional fixed seed (opt-in; default is non-deterministic)
+label_exposure_train_log_interval: null  # Optional: log label exposure on the training stream
+label_exposure_offline_probe_log: false  # Optional: log exposure during offline probe optimization
+ptb_xl_data_dir: null      # Only used when probe_source="ptb-xl"
+
+# masking
+patch_size: 25
+min_block_size: 10
+min_keep_ratio: 0.15
+max_keep_ratio: 0.25
+masking_strategy: remove
+min_keep_ratio_global: 0.50
+max_keep_ratio_global: 0.9
+
+# model overrides
+qkv_bias: True
+bias: True
+
+# training
+steps: 20_000
+batch_size: 256
+encoder_momentum: 0.998
+final_encoder_momentum: 0.9995
+learning_rate: 1.0e-3
+final_learning_rate: 1.0e-6
+learning_rate_warmup_steps: 2_000
+weight_decay: 0.0
+final_weight_decay: 0.0
+opt_betas: [0.9, 0.99]
+opt_eps: 1.0e-6
+gradient_clip: 0
+gradient_accumulation_steps: 1
+checkpoint_interval: 1_000
+
+# online probe (synthetic Aionoscope labels)
+probe_lr: 1.0e-1
+probe_weight_decay: 0.0
+probe_eval_interval: 100
+
+# offline probe (synthetic Aionoscope labels)
+offline_probe_eval_interval: 1000
+offline_probe_task: null
+offline_probe_steps: 5000
+offline_probe_batch_size: 256
+offline_probe_learning_rate: 1.0e-2
+offline_probe_final_learning_rate: 1.0e-2
+offline_probe_learning_rate_warmup_steps: 0
+offline_probe_weight_decay: 0.0
+offline_probe_opt_betas: [0.9, 0.999]
+offline_probe_gradient_clip: 1.0
+offline_probe_checkpoint_interval: 200

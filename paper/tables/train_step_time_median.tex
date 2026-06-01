@@ -1,0 +1,18 @@
+\begin{table}[t]
+\centering
+\scriptsize
+\caption{Median per-step training time (W\&B: train/step\_time) over steps 1000..20000, aggregated across seeds as $\mathrm{median}(\mathrm{std})$ (ddof=1; std shown in $10^{-3}$ units). Logged per training step and excludes offline-probe evaluation time.}
+\label{tab:train_step_time_median}
+\begin{tabular}{ll S[table-format=1.3(3)] S[table-format=1.3(3)]}
+\toprule
+model & config & \multicolumn{1}{c}{PTB-XL (s)} & \multicolumn{1}{c}{Aionoscope (s)} \\
+\midrule
+JEPA & CLS & 0.074(1) & 0.076(1) \\
+JEPA & Mean & 0.073(1) & 0.076(2) \\
+NEPA &  & 0.048(0) & 0.052(0) \\
+NEPA & +Proj & 0.050(0) & 0.054(0) \\
+LeNEPA & T20 L0-8 & 0.072(0) & 0.075(0) \\
+LeNEPA & BRI20 L0-8 & 0.093(0) & 0.096(0) \\
+\bottomrule
+\end{tabular}
+\end{table}

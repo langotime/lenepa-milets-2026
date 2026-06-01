@@ -1,0 +1,26 @@
+\begin{table}[t]
+\centering
+\scriptsize
+\caption{Projector ablation (NEPA / LeNEPA): best-layer value at the last \emph{common} offline-probe eval step across seeds and projector toggles, aggregated across seeds as $\mathrm{median}(\mathrm{std})$ (ddof=1; std shown in $10^{-3}$ units). Each cell reports $-\mathrm{Proj} / +\mathrm{Proj}$; within each pair, the better value by median is bold (higher is better for AUROC / AUPRC / Pearson / $R^2$; lower is better for MSE / MAE).}
+\label{tab:projector_ablation_last_step}
+
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.15}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lllrrrrrr}
+\toprule
+& & & \multicolumn{2}{c}{Classification} & \multicolumn{4}{c}{Dense regression} \\
+\cmidrule(lr){4-5}\cmidrule(lr){6-9}
+dataset & model & config & AUROC & AUPRC & MSE & MAE & Pearson & $R^2$ \\
+\midrule
+\multirow{3}{*}{PTB-XL} & NEPA &  & \textbf{0.860(3)} / 0.852(9) & \textbf{0.272(5)} / 0.266(8) & \multicolumn{4}{c}{\textemdash} \\
+& LeNEPA & T20 L0-8 & 0.864(4) / \textbf{0.881(3)} & 0.259(4) / \textbf{0.287(6)} & \multicolumn{4}{c}{\textemdash} \\
+& LeNEPA & BRI20 L0-8 & 0.832(7) / \textbf{0.863(4)} & 0.245(5) / \textbf{0.278(6)} & \multicolumn{4}{c}{\textemdash} \\
+\midrule
+\multirow{3}{*}{Diag} & NEPA &  & 0.831(4) / \textbf{0.897(2)} & 0.513(6) / \textbf{0.612(7)} & 1.001(9) / \textbf{0.827(8)} & 0.461(3) / \textbf{0.382(3)} & 0.522(4) / \textbf{0.610(7)} & 0.197(24) / \textbf{0.348(23)} \\
+& LeNEPA & T20 L0-8 & 0.848(3) / \textbf{0.920(1)} & 0.588(11) / \textbf{0.651(4)} & 0.886(32) / \textbf{0.797(12)} & 0.449(18) / \textbf{0.405(4)} & 0.519(17) / \textbf{0.584(6)} & -0.214(138) / \textbf{0.164(105)} \\
+& LeNEPA & BRI20 L0-8 & 0.868(6) / \textbf{0.902(1)} & 0.567(9) / \textbf{0.608(3)} & 0.975(10) / \textbf{0.834(10)} & 0.502(4) / \textbf{0.396(4)} & 0.488(7) / \textbf{0.590(6)} & -0.767(337) / \textbf{-0.437(228)} \\
+\bottomrule
+\end{tabular}
+} % resizebox
+\end{table}

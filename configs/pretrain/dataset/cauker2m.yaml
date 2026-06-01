@@ -1,0 +1,14 @@
+# @package _global_
+# CauKer2M parquet stream (unlabeled)
+sampling_frequency: 1
+channels: [c0]
+channel_size: 512
+data_backend: cauker
+probe_source: null
+aiono: null
+datasets:
+  cauker: 1.0
+
+# Runtime keys for the CauKer backend (not part of configs.pretrain.Config).
+cauker:
+  parquet_path: ../data/cauker2m_hf/CauKer2M.parquet

@@ -1,0 +1,243 @@
+# @package _global_
+# Canonical Aionoscope benchmark dataset: `aiono_basic_components/v1` (balanced sampling).
+sampling_frequency: 500  # Baseline benchmark contract; benchmark-labeled runs must keep 500 Hz.
+channels: [I]
+channel_size: 5000
+data_backend: aiono
+probe_source: aiono
+datasets:
+  aiono: 1.0
+
+aiono:
+  kind: basic_components
+  benchmark_family: aiono_basic_components
+  benchmark_version: v1
+  train_seed: 0
+  validation_seed_values: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+  validation_seed_offset: 100
+  val_batches: 256
+  offline_probe_train_batches: 256
+  offline_probe_val_batches: 256
+  view_name: mix
+  dense_probe:
+    enabled: true
+    log_per_target: true
+    targets:
+      - name: spike_time_frac
+        source: process
+        node: SingleEventNode:spike
+        param: time_idx
+        enabled_key: spike
+        normalize: unit_interval
+      - name: spike_amplitude
+        source: process
+        node: SingleEventNode:spike
+        param: amplitude
+        enabled_key: spike
+      - name: level_change_time_frac
+        source: process
+        node: SingleEventNode:level_change
+        param: time_idx
+        enabled_key: level_change
+        normalize: unit_interval
+      - name: level_change_amplitude
+        source: process
+        node: SingleEventNode:level_change
+        param: amplitude
+        enabled_key: level_change
+      - name: gaussian_time_frac
+        source: process
+        node: SingleEventNode:gaussian
+        param: time_idx
+        enabled_key: gaussian
+        normalize: unit_interval
+      - name: gaussian_amplitude
+        source: process
+        node: SingleEventNode:gaussian
+        param: amplitude
+        enabled_key: gaussian
+      - name: gaussian_sigma_sec
+        source: process
+        node: SingleEventNode:gaussian
+        param: sigma_sec
+        enabled_key: gaussian
+      - name: gaussian_noise_std
+        source: view
+        view: GaussianNoiseView
+        param: noise_std
+        enabled_key: gaussian_noise
+      - name: uniform_noise_amplitude
+        source: view
+        view: UniformNoiseView
+        param: amplitude
+        enabled_key: uniform_noise
+      - name: random_walk_step_std
+        source: view
+        view: RandomWalkNoiseView
+        param: step_std
+        enabled_key: random_walk_noise
+      - name: linear_trend_slope
+        source: view
+        view: LinearTrendView
+        param: slope
+        enabled_key: linear_trend
+      - name: linear_trend_intercept
+        source: view
+        view: LinearTrendView
+        param: intercept
+        enabled_key: linear_trend
+      - name: quadratic_trend_a
+        source: view
+        view: QuadraticTrendView
+        param: a
+        enabled_key: quadratic_trend
+      - name: quadratic_trend_b
+        source: view
+        view: QuadraticTrendView
+        param: b
+        enabled_key: quadratic_trend
+      - name: quadratic_trend_c
+        source: view
+        view: QuadraticTrendView
+        param: c
+        enabled_key: quadratic_trend
+      - name: log_trend_amplitude
+        source: view
+        view: LogTrendView
+        param: amplitude
+        enabled_key: log_trend
+      - name: log_trend_offset
+        source: view
+        view: LogTrendView
+        param: offset
+        enabled_key: log_trend
+      - name: sigmoid_trend_amplitude
+        source: view
+        view: SigmoidTrendView
+        param: amplitude
+        enabled_key: sigmoid_trend
+      - name: sigmoid_trend_center
+        source: view
+        view: SigmoidTrendView
+        param: center
+        enabled_key: sigmoid_trend
+      - name: sigmoid_trend_sharpness
+        source: view
+        view: SigmoidTrendView
+        param: sharpness
+        enabled_key: sigmoid_trend
+      - name: sigmoid_trend_offset
+        source: view
+        view: SigmoidTrendView
+        param: offset
+        enabled_key: sigmoid_trend
+      - name: sine_amplitude
+        source: view
+        view: SineWaveView
+        param: amplitude
+        enabled_key: sine
+      - name: sine_frequency_hz
+        source: view
+        view: SineWaveView
+        param: frequency_hz
+        enabled_key: sine
+      - name: sine_phase
+        source: view
+        view: SineWaveView
+        param: phase
+        enabled_key: sine
+      - name: sine_offset
+        source: view
+        view: SineWaveView
+        param: offset
+        enabled_key: sine
+      - name: sawtooth_amplitude
+        source: view
+        view: SawtoothWaveView
+        param: amplitude
+        enabled_key: sawtooth
+      - name: sawtooth_frequency_hz
+        source: view
+        view: SawtoothWaveView
+        param: frequency_hz
+        enabled_key: sawtooth
+      - name: sawtooth_phase
+        source: view
+        view: SawtoothWaveView
+        param: phase
+        enabled_key: sawtooth
+      - name: sawtooth_offset
+        source: view
+        view: SawtoothWaveView
+        param: offset
+        enabled_key: sawtooth
+      - name: square_amplitude
+        source: view
+        view: SquareWaveView
+        param: amplitude
+        enabled_key: square
+      - name: square_frequency_hz
+        source: view
+        view: SquareWaveView
+        param: frequency_hz
+        enabled_key: square
+      - name: square_phase
+        source: view
+        view: SquareWaveView
+        param: phase
+        enabled_key: square
+      - name: square_offset
+        source: view
+        view: SquareWaveView
+        param: offset
+        enabled_key: square
+      - name: square_duty_cycle
+        source: view
+        view: SquareWaveView
+        param: duty_cycle
+        enabled_key: square
+  basic_components:
+    num_enabled: 2
+    # Canonical `aiono_basic_components/v1` periodic contract:
+    # - `sampling_frequency` stays at the baseline `500 Hz`
+    # - `frequency_hz: auto` resolves from the shared upstream benchmark formulas
+    # - non-sine upper bounds are recoverability-based, not generic "no aliasing" claims
+    periodic:
+      frequency_hz: auto
+      min_full_periods: 1.0
+      nyquist_fraction: 0.9
+      recoverability_policy:
+        sine: nyquist
+        sawtooth: min_points_per_period
+        square: min_points_in_shorter_plateau
+      sawtooth_min_points_per_period: 5
+      # Square-wave recoverability depends on the shortest plateau implied by the
+      # configured duty-cycle range, not just on total points per period.
+      square_min_points_in_shorter_plateau: 2
+      amplitude:
+        low: 0.2
+        high: 1.2
+      phase:
+        low: 0.0
+        high: 6.283185307179586
+      offset:
+        low: -0.2
+        high: 0.2
+      square_duty_cycle:
+        low: 0.1
+        high: 0.9
+    component_keys:
+      - constant
+      - gaussian_noise
+      - uniform_noise
+      - random_walk_noise
+      - linear_trend
+      - quadratic_trend
+      - log_trend
+      - sigmoid_trend
+      - sine
+      - sawtooth
+      - square
+      - spike
+      - level_change
+      - gaussian

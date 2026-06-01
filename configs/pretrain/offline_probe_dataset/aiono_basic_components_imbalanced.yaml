@@ -1,0 +1,23 @@
+# @package _global_
+defaults:
+  - aiono_basic_components_balanced
+  - _self_
+
+# Canonical offline probe dataset: `aiono_basic_components/v1` with explicit class imbalance.
+offline_probe_aiono:
+  basic_components:
+    component_weights_by_key:
+      constant: 1.0
+      gaussian_noise: 0.02
+      uniform_noise: 1.0
+      random_walk_noise: 1.0
+      linear_trend: 1.0
+      quadratic_trend: 1.0
+      log_trend: 0.02
+      sigmoid_trend: 1.0
+      sine: 1.0
+      sawtooth: 1.0
+      square: 0.02
+      spike: 0.02
+      level_change: 0.02
+      gaussian: 0.02

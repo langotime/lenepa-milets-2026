@@ -1,0 +1,18 @@
+\begin{table}[t]
+\centering
+\scriptsize
+\caption{Aionoscope: $R^2$ by layer at the last eval step (step=20000). Each cell reports $\mathrm{median}(\mathrm{std})$ across seeds (std shown in $10^{-3}$ units); best layer by median is bold; layers within 90\% of best (by median) are underlined.}
+\label{tab:aiono_last_step_by_layer_r2}
+\begin{tabular}{lrrrrrrrrr}
+\toprule
+method & L0 & L1 & L2 & L3 & L4 & L5 & L6 & L7 & L8 \\
+\midrule
+JEPA (CLS) & \textbf{-0.006(2)} & -0.143(170) & -0.987(386) & -2.395(932) & -3.880(2773) & -6.517(3294) & -7.849(5636) & -12.336(4285) & -11.089(6272) \\
+JEPA (Mean) & \textbf{-0.514(291)} & -6.730(3873) & -11.973(4603) & -15.005(3651) & -17.412(9724) & -20.610(5766) & -23.135(6831) & -23.335(7225) & -26.616(6953) \\
+NEPA & -0.019(28) & -0.010(165) & 0.067(132) & 0.045(424) & 0.015(188) & 0.099(141) & \textbf{0.149(61)} & 0.116(54) & -0.048(130) \\
+NEPA +Proj & -0.126(73) & -0.766(1206) & -4.339(1200) & -2.675(725) & -0.571(413) & 0.236(97) & \textbf{0.346(38)} & \underline{0.317(17)} & 0.298(11) \\
+LeNEPA (T20 L0-8) & -0.694(294) & -7.296(4739) & -17.982(5970) & -18.721(6082) & -12.848(3817) & -9.926(3032) & -7.637(4085) & -3.127(1421) & \textbf{0.164(105)} \\
+LeNEPA (BRI20 L0-8) & \textbf{-0.235(162)} & -6.612(5337) & -10.384(6670) & -14.386(3905) & -12.575(8045) & -13.078(2753) & -11.705(1990) & -9.575(3274) & -0.709(386) \\
+\bottomrule
+\end{tabular}
+\end{table}

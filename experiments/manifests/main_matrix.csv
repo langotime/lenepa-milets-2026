@@ -1,0 +1,16 @@
+run_family,paper_dataset,legacy_prefix,method,readout,projector,stability,submitted_seeds,extra_seed_exports,config,objective,notes
+ptbxl_jepa_cls,PTB-XL,PTBXL,JEPA,CLS,none,EMA target encoder,0-4,5-9,ViTXS_ptbxl,jepa,Main JEPA CLS baseline.
+ptbxl_jepa_mean,PTB-XL,PTBXL,JEPA,mean,none,EMA target encoder,0-4,5-9,ViTXS_ptbxl,jepa,Main JEPA mean-pooling baseline.
+ptbxl_nepa_stopgrad_mean_proj,PTB-XL,PTBXL,NEPA,mean,MLP,stop-gradient target,0-4,5-9,ViTXS_ptbxl,nepa_stopgrad,Main NEPA baseline with projector.
+ptbxl_nepa_stopgrad_mean_noproj,PTB-XL,PTBXL,NEPA,mean,none,stop-gradient target,0-4,5-9,ViTXS_ptbxl,nepa_stopgrad,Projector ablation.
+ptbxl_lenepa_t20_l0_8_pd0_proj,PTB-XL,PTBXL,LeNEPA,layer probes,MLP,temporal SIGReg lambda_T=20 layers 0 and 8,0-4,5-9,ViTXS_ptbxl,nepa_sigreg,Main LeNEPA configuration.
+ptbxl_lenepa_t20_l0_8_pd0_noproj,PTB-XL,PTBXL,LeNEPA,layer probes,none,temporal SIGReg lambda_T=20 layers 0 and 8,0-4,5-9,ViTXS_ptbxl,nepa_sigreg,Projector ablation.
+ptbxl_lenepa_bri20_l0_8_pd0_proj,PTB-XL,PTBXL,LeNEPA,layer probes,MLP,batch/representation/innovation SIGReg lambda=20,0-4,5-9,ViTXS_ptbxl,nepa_sigreg,Stabilization ablation.
+diag_jepa_cls,Diag,AIONO,JEPA,CLS,none,EMA target encoder,0-4,5-9,ViTXS_aiono,jepa,Legacy run names use AIONO.
+diag_jepa_mean,Diag,AIONO,JEPA,mean,none,EMA target encoder,0-4,5-9,ViTXS_aiono,jepa,Legacy run names use AIONO.
+diag_nepa_stopgrad_mean_proj,Diag,AIONO,NEPA,mean,MLP,stop-gradient target,0-4,5-9,ViTXS_aiono,nepa_stopgrad,Main Diag NEPA baseline.
+diag_nepa_stopgrad_mean_noproj,Diag,AIONO,NEPA,mean,none,stop-gradient target,0-4,5-9,ViTXS_aiono,nepa_stopgrad,Projector ablation.
+diag_lenepa_t20_l0_8_pd0_proj,Diag,AIONO,LeNEPA,layer probes,MLP,temporal SIGReg lambda_T=20 layers 0 and 8,0-4,5-9,ViTXS_aiono,nepa_sigreg,Main Diag LeNEPA configuration.
+diag_lenepa_t20_l0_8_pd0_noproj,Diag,AIONO,LeNEPA,layer probes,none,temporal SIGReg lambda_T=20 layers 0 and 8,0-4,5-9,ViTXS_aiono,nepa_sigreg,Projector ablation.
+diag_lenepa_bri20_l0_8_pd0_proj,Diag,AIONO,LeNEPA,layer probes,MLP,batch/representation/innovation SIGReg lambda=20,0-4,5-9,ViTXS_aiono,nepa_sigreg,Stabilization ablation.
+cauker_ucr,CauKer2M to UCR,CAUKER2M,LeNEPA,layer probes,MLP,temporal SIGReg lambda_T=2.5 layers 0 and 8,0,,ViTXS_cauker2m,nepa_sigreg,UCR frozen-encoder check; D=256 and patch-normalized scalar stats.

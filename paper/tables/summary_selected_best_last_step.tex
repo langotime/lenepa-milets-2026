@@ -1,0 +1,19 @@
+\begin{table*}[t]
+\centering
+\small
+\caption{PTB-XL/Diag fixed-horizon experiment matrix at the last step ($20{,}000$ updates) for the controlled five-seed comparisons. JEPA/NEPA rows report best-layer frozen-backbone probes; LeNEPA classification columns use a fixed $L4$ readout, while LeNEPA dense Diag columns report metric-specific best-layer diagnostic probes. Values are aggregated across seeds as $\mathrm{median}(\mathrm{std})$, with std shown in $10^{-3}$ units.}
+\label{tab:summary_selected_best_last_step}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}llcccccccc@{}}
+\toprule
+\multicolumn{2}{c}{} & \multicolumn{2}{c}{PTB-XL} & \multicolumn{6}{c}{Diag} \\
+\cmidrule(lr){3-4} \cmidrule(lr){5-10}
+model & config & \multicolumn{1}{c}{AUROC $\uparrow$} & \multicolumn{1}{c}{AUPRC $\uparrow$} & \multicolumn{1}{c}{AUROC $\uparrow$} & \multicolumn{1}{c}{AUPRC $\uparrow$} & \multicolumn{1}{c}{MSE $\downarrow$} & \multicolumn{1}{c}{MAE $\downarrow$} & \multicolumn{1}{c}{Pearson $\uparrow$} & \multicolumn{1}{c}{$R^2$ $\uparrow$} \\
+\midrule
+JEPA & CLS & \textbf{0.891(3)} & \underline{0.287(9)} & 0.880(13) & 0.597(28) & 1.065(13) & 0.515(5) & 0.480(12) & -0.005(24) \\
+JEPA & Mean & \textbf{0.892(3)} & \textbf{0.298(5)} & 0.872(7) & 0.576(16) & 1.113(13) & 0.548(5) & 0.462(11) & -0.514(291) \\
+NEPA &  & 0.860(3) & 0.272(5) & 0.831(4) & 0.513(6) & 1.001(9) & 0.461(3) & 0.522(4) & \underline{0.197(24)} \\
+NEPA & +Proj & 0.852(9) & 0.266(8) & \underline{0.897(2)} & \underline{0.612(7)} & \underline{0.827(8)} & \textbf{0.382(3)} & \textbf{0.610(7)} & \textbf{0.348(23)} \\
+LeNEPA & T20 L0-8 & \underline{0.880(6)} & \underline{0.285(5)} & \textbf{0.920(1)} & \textbf{0.650(4)} & \textbf{0.797(12)} & \underline{0.405(4)} & \underline{0.584(6)} & 0.164(105) \\
+\bottomrule
+\end{tabular*}
+\end{table*}

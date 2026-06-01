@@ -1,0 +1,30 @@
+# @package _global_
+# JEPA
+use_nepa: false
+use_lejepa: false
+ema_encoder: true
+add_sigreg_loss: false
+num_views: 1
+num_views_global: 2
+use_mean_pooling: false
+use_projector: false
+proj_dim: 16
+proj_hidden_dim: 768
+proj_num_layers: 1
+sigreg_normalize: false
+loss_scale_sigreg: null
+loss_scale_sigreg_time: null
+loss_scale_sigreg_time_global: null
+loss_scale_inv: null
+loss_scale_inv_patch: null
+# NEPA
+nepa_loss_type: cos
+nepa_loss_scale: 1.0
+nepa_sigreg_scale: 10.0
+nepa_target_uses_pos_embed: null
+# NEPA architecture optimizations
+use_rope: false
+rope_base: null
+use_swiglu: false
+use_qk_norm: false
+qk_norm_eps: null

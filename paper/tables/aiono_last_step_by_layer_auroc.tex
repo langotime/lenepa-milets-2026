@@ -1,0 +1,18 @@
+\begin{table}[t]
+\centering
+\scriptsize
+\caption{Aionoscope: AUROC by layer at the last eval step (step=20000). Each cell reports $\mathrm{median}(\mathrm{std})$ across seeds (std shown in $10^{-3}$ units); best layer by median is bold; layers within 90\% of best (by median) are underlined.}
+\label{tab:aiono_last_step_by_layer_auroc}
+\begin{tabular}{lrrrrrrrrr}
+\toprule
+method & L0 & L1 & L2 & L3 & L4 & L5 & L6 & L7 & L8 \\
+\midrule
+JEPA (CLS) & 0.500(0) & 0.771(11) & \underline{0.806(10)} & \underline{0.829(14)} & \underline{0.847(12)} & \underline{0.861(14)} & \underline{0.869(14)} & \underline{0.875(12)} & \textbf{0.880(14)} \\
+JEPA (Mean) & 0.617(4) & 0.782(13) & \underline{0.808(11)} & \underline{0.826(12)} & \underline{0.837(8)} & \underline{0.845(8)} & \underline{0.854(9)} & \underline{0.863(10)} & \textbf{0.872(7)} \\
+NEPA & 0.626(0) & \underline{0.797(5)} & \underline{0.815(4)} & \underline{0.825(5)} & \underline{0.828(5)} & \textbf{0.828(8)} & \underline{0.815(14)} & \underline{0.762(19)} & \underline{0.821(3)} \\
+NEPA +Proj & 0.615(2) & \underline{0.864(1)} & \underline{0.885(2)} & \textbf{0.896(2)} & \underline{0.894(3)} & \underline{0.887(5)} & \underline{0.869(4)} & \underline{0.856(3)} & \underline{0.842(4)} \\
+LeNEPA (T20 L0-8) & 0.621(0) & \underline{0.873(3)} & \underline{0.902(2)} & \underline{0.918(1)} & \textbf{0.920(1)} & \underline{0.918(1)} & \underline{0.914(2)} & \underline{0.910(2)} & \underline{0.895(1)} \\
+LeNEPA (BRI20 L0-8) & 0.621(1) & \underline{0.860(4)} & \underline{0.890(2)} & \underline{0.897(2)} & \underline{0.902(1)} & \textbf{0.904(1)} & \underline{0.903(1)} & \underline{0.902(1)} & \underline{0.897(0)} \\
+\bottomrule
+\end{tabular}
+\end{table}

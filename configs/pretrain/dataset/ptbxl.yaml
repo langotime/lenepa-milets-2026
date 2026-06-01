@@ -1,0 +1,9 @@
+# @package _global_
+sampling_frequency: 500
+channels: [I, II, III, AVR, AVL, AVF, V1, V2, V3, V4, V5, V6]
+channel_size: 5000
+data_backend: dump
+probe_source: ptb-xl
+aiono: null
+datasets:
+  ptb-xl: 1.

@@ -1,0 +1,64 @@
+# @package _global_
+# NEPA
+use_nepa: true
+use_lejepa: false
+ema_encoder: true
+add_sigreg_loss: false
+num_views: 1
+num_views_global: 2
+use_mean_pooling: false
+use_projector: true
+proj_dim: 192
+proj_out_dim: null
+proj_hidden_dim: 768
+proj_num_layers: 2
+nepa_projector_mode: both
+sigreg_normalize: false
+loss_scale_sigreg: null
+loss_scale_sigreg_time: null
+loss_scale_sigreg_time_global: null
+loss_scale_inv: null
+loss_scale_inv_patch: null
+nepa_loss_type: mse
+nepa_loss_scale: 1.0
+nepa_sigreg_scale: 10.0
+nepa_sigreg_scale_time: 10.0
+nepa_sigreg_scale_batch_time: null
+nepa_sigreg_innov_scale: null
+nepa_sigreg_rep_scale: null
+nepa_sigreg_rep_use_projector: true
+nepa_sigreg_layers:
+  - ${nepa_target_layer}
+  - ${depth}
+nepa_sigreg_time_layers:
+  - ${nepa_target_layer}
+  - ${depth}
+nepa_sigreg_batch_time_layers: null
+nepa_sigreg_innov_layers:
+  - ${nepa_target_layer}
+  - ${depth}
+nepa_sigreg_rep_layers:
+  - ${depth}
+nepa_stability: sigreg
+nepa_target_uses_pos_embed: false
+nepa_target_layer: 0
+offline_probe_layers_categorical:
+  - ${depth}
+offline_probe_layers_dense:
+  - ${depth}
+offline_probe_layers_confusion: null
+nepa_layer_output_norm: ln
+nepa_final_norm: ln
+nepa_layer_output_bn_eps: 1.0e-5
+nepa_rep_pooling: mean
+nepa_log_patch_loss: false
+nepa_patch_loss_log_interval: 100
+nepa_distribution_diagnostics: false
+nepa_vit_drift_diagnostics: false
+nepa_vit_drift_layers: null
+nepa_use_dynamic_chunking: false
+nepa_static_tokenizer: conv_patch_embed
+
+# Overrides
+num_registers: 0
+pred_depth: 0

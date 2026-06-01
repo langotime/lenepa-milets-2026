@@ -1,0 +1,3 @@
+# @package _global_
+# Offline probe dataset defaults to the training probe source/dataset.
+offline_probe_source: ${probe_source}

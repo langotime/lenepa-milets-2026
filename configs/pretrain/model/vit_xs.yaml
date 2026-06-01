@@ -1,0 +1,23 @@
+# @package _global_
+# learnable encoder parameters: 3,600,000
+dim: 192
+depth: 8
+num_heads: 4
+pred_dim: 96
+pred_depth: 8
+pred_num_heads: 4
+mlp_ratio: 4.
+qkv_bias: False
+dropout: 0.
+attn_dropout: 0.
+num_registers: 1
+bias: False
+norm_eps: 1.0e-6
+layer_scale_eps: 0.
+pos_embed_type: none
+# NEPA architecture optimizations
+use_rope: true
+rope_base: 10000
+use_swiglu: true
+use_qk_norm: true
+qk_norm_eps: 1.0e-6

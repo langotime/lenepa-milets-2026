@@ -1,0 +1,10 @@
+legacy_name,paper_name_or_current_config,notes
+AIONO,Diag,Historical W&B/run-script prefix for the synthetic diagnostic benchmark.
+toyts,Diag,Retired internal alias found in old job scripts and run names.
+ViTXS_toyts,ViTXS_aiono,Old Hydra config name; current repo uses Aionoscope/Diag config names.
+toyts_basic_components,aiono_basic_components_imbalanced,Closest current canonical preset for legacy non-BAL Diag runs.
+toyts_basic_components_balanced,aiono_basic_components_balanced,Current balanced Diag/Aionoscope preset.
+toyts.*,aiono.*,Hydra config field rename.
+OPTOYTSBCBAL,offline_probe_dataset=aiono_basic_components_balanced,Legacy CauKer run suffix.
+PTBXL,PTB-XL,Real ECG dataset used for transfer/classification matrix.
+CAUKER2M,CauKer2M,Synthetic unlabeled pretraining corpus for the UCR frozen-encoder check.
