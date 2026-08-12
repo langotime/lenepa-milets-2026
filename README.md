@@ -2,6 +2,19 @@
 
 This repository is a clean extraction of the code, experiment manifests, result tables, and paper assets used for the LeNEPA MiLeTS/KDD 2026 submission.
 
+## Paper
+
+[LeNEPA: No-Augmentation Next-Latent Prediction for Time-Series Representation Learning](https://arxiv.org/abs/2607.00958)
+(`arXiv:2607.00958`) — Alexander Chemeris, Ming Jin, Randall Balestriero.
+Accepted as a **poster** at the MILETS workshop at KDD 2026.
+
+The companion instrument paper,
+[Aionoscope: Debugging Latent-State Accessibility in Time-Series Representations](https://arxiv.org/abs/2607.00956)
+(`arXiv:2607.00956`), was accepted as an **oral** at the same workshop. Its
+benchmark harness is
+[aionoscope-benchmarks](https://github.com/langotime/aionoscope-benchmarks) and
+its results are published at <https://aionoscope.langotime.ai/>.
+
 ## What Is Included
 
 - LeNEPA/NEPA/JEPA training code needed to reproduce the paper runs.
